@@ -1,0 +1,313 @@
+"use client";
+import { useEffect, useState, useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { useRouter } from "next/navigation";
+
+const TYPEWRITER_TEXTS = [
+  "Corre más rápido.",
+  "Entrena más inteligente.",
+  "Conoce tus rutas.",
+  "Alcanza tu meta.",
+];
+
+const FLOATING_ELEMENTS = [
+  { text: "5K", x: "8%", y: "20%", size: "text-6xl", delay: 0 },
+  { text: "10K", x: "85%", y: "15%", size: "text-5xl", delay: 0.3 },
+  { text: "21K", x: "90%", y: "65%", size: "text-4xl", delay: 0.6 },
+  { text: "42K", x: "5%", y: "70%", size: "text-3xl", delay: 0.9 },
+  { text: "🏃", x: "75%", y: "35%", size: "text-5xl", delay: 0.4 },
+  { text: "📍", x: "15%", y: "45%", size: "text-3xl", delay: 0.7 },
+  { text: "⚡", x: "50%", y: "10%", size: "text-4xl", delay: 0.2 },
+  { text: "🌴", x: "30%", y: "80%", size: "text-3xl", delay: 1.0 },
+];
+
+function TypewriterText() {
+  const [index, setIndex] = useState(0);
+  const [displayed, setDisplayed] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const current = TYPEWRITER_TEXTS[index];
+    if (!deleting && displayed.length < current.length) {
+      const t = setTimeout(() => setDisplayed(current.slice(0, displayed.length + 1)), 60);
+      return () => clearTimeout(t);
+    }
+    if (!deleting && displayed.length === current.length) {
+      const t = setTimeout(() => setDeleting(true), 1800);
+      return () => clearTimeout(t);
+    }
+    if (deleting && displayed.length > 0) {
+      const t = setTimeout(() => setDisplayed(displayed.slice(0, -1)), 30);
+      return () => clearTimeout(t);
+    }
+    if (deleting && displayed.length === 0) {
+      setDeleting(false);
+      setIndex((i) => (i + 1) % TYPEWRITER_TEXTS.length);
+    }
+  }, [displayed, deleting, index]);
+
+  return (
+    <span className="text-[#F16823]">
+      {displayed}
+      <span className="animate-pulse">|</span>
+    </span>
+  );
+}
+
+function FadeInSection({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 40 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+const BENEFITS = [
+  { icon: "🤖", title: "Plan generado por IA", desc: "Coach JJ analiza tu nivel, objetivo y disponibilidad para crear un plan único para ti." },
+  { icon: "🗺️", title: "Rutas locales de Panamá", desc: "Sesiones diseñadas para la Cinta Costera, Parque Omar, Causeway y tu zona." },
+  { icon: "📈", title: "Adaptación continua", desc: "El plan evoluciona con tu rendimiento. Cada bloque mejora con tus datos reales." },
+];
+
+const STEPS = [
+  { n: "01", title: "Cuéntale a Coach JJ", desc: "Completa el onboarding en 3 minutos. Tu objetivo, nivel y disponibilidad." },
+  { n: "02", title: "Recibe tu plan", desc: "Coach JJ genera tu plan personalizado al instante. Semana por semana." },
+  { n: "03", title: "Entrena y evoluciona", desc: "Registra tus marcas cada semana. El plan se ajusta automáticamente." },
+];
+
+export default function LandingPage() {
+  const router = useRouter();
+
+  return (
+    <main className="min-h-screen bg-[#1B1C1E] overflow-x-hidden">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-[#1B1C1E]/80 backdrop-blur-sm border-b border-[#707070]/20">
+        <div className="flex items-center gap-2">
+          <img src="/logo.svg" alt="RunClub Panamá" className="h-8" />
+          <span className="text-white font-semibold text-sm hidden sm:block">RunClub Panamá</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <button onClick={() => router.push("/login")} className="text-sm text-[#B8B8B8] hover:text-white transition-colors">
+            Iniciar sesión
+          </button>
+          <button onClick={() => router.push("/register")} className="rounded-lg bg-[#F16823] px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
+            Empieza gratis
+          </button>
+        </div>
+      </nav>
+
+      <section className="relative flex min-h-screen flex-col items-center justify-center px-6 pt-20 text-center overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none select-none">
+          {FLOATING_ELEMENTS.map((el, i) => (
+            <motion.div
+              key={i}
+              className={"absolute font-black text-white/5 " + el.size}
+              style={{ left: el.x, top: el.y }}
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{
+                opacity: [0, 0.08, 0.05, 0.08],
+                scale: [0.5, 1, 0.95, 1],
+                y: [0, -12, 0, -8, 0],
+              }}
+              transition={{
+                delay: el.delay,
+                duration: 6,
+                repeat: Infinity,
+                repeatType: "mirror",
+                ease: "easeInOut",
+              }}
+            >
+              {el.text}
+            </motion.div>
+          ))}
+          <motion.div
+            className="absolute inset-0"
+            animate={{ opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            style={{
+              background: "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(241,104,35,0.06) 0%, transparent 70%)",
+            }}
+          />
+        </div>
+
+        <div className="relative z-10 max-w-2xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="mb-8"
+          >
+            <img src="/logo.svg" alt="RunClub Panamá" className="h-20 sm:h-28 mx-auto" />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-4"
+          >
+            <div className="flex items-center justify-center mb-2">
+              <span className="text-4xl sm:text-6xl font-black leading-tight">
+                <TypewriterText />
+              </span>
+            </div>
+            <motion.h1
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="text-2xl sm:text-3xl font-bold text-white/70 leading-tight mt-6 tracking-wide"
+            >
+              Con Coach JJ en Panamá.
+            </motion.h1>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-[#B8B8B8] text-base sm:text-lg max-w-md mx-auto mb-10 leading-relaxed"
+          >
+            Tu plan de entrenamiento personalizado con IA. Rutas locales de Panamá, adaptación continua y una comunidad que entrena contigo.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(241,104,35,0.4)" }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => router.push("/register")}
+              className="rounded-xl bg-[#F16823] px-8 py-4 text-base font-semibold text-white hover:opacity-90 transition-opacity w-full sm:w-auto"
+            >
+              Empieza gratis — 7 días
+            </motion.button>
+            <button
+              onClick={() => router.push("/login")}
+              className="text-sm text-[#B8B8B8] hover:text-white transition-colors"
+            >
+              Ya tengo cuenta →
+            </button>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            className="mt-5 text-xs text-[#B8B8B8]/50"
+          >
+            Sin tarjeta de crédito · Cancela cuando quieras
+          </motion.p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+            className="text-[#B8B8B8]/30 text-2xl"
+          >
+            ↓
+          </motion.div>
+        </motion.div>
+      </section>
+
+      <section className="px-6 py-24 max-w-5xl mx-auto">
+        <FadeInSection>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
+            Todo lo que necesitas para correr mejor en Panamá
+          </h2>
+          <p className="text-[#B8B8B8] text-center mb-12 max-w-lg mx-auto">
+            No es una app genérica. Es un coach que conoce tus rutas.
+          </p>
+        </FadeInSection>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {BENEFITS.map((b, i) => (
+            <FadeInSection key={i} delay={i * 0.15}>
+              <motion.div
+                whileHover={{ y: -4, borderColor: "rgba(241,104,35,0.4)" }}
+                transition={{ duration: 0.2 }}
+                className="rounded-2xl border border-[#707070]/40 bg-[#2a2b2d] p-6 space-y-3 h-full cursor-default"
+              >
+                <span className="text-4xl">{b.icon}</span>
+                <h3 className="text-base font-semibold text-white">{b.title}</h3>
+                <p className="text-sm text-[#B8B8B8] leading-relaxed">{b.desc}</p>
+              </motion.div>
+            </FadeInSection>
+          ))}
+        </div>
+      </section>
+
+      <section className="px-6 py-24 bg-[#2a2b2d]">
+        <div className="max-w-3xl mx-auto">
+          <FadeInSection>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-16">
+              Tres pasos para empezar
+            </h2>
+          </FadeInSection>
+          <div className="space-y-14">
+            {STEPS.map((s, i) => (
+              <FadeInSection key={i} delay={i * 0.2}>
+                <div className="flex items-start gap-6">
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    className="text-6xl sm:text-8xl font-black text-[#F16823]/15 leading-none shrink-0 tabular-nums"
+                  >
+                    {s.n}
+                  </motion.span>
+                  <div className="pt-2">
+                    <h3 className="text-lg font-semibold text-white mb-2">{s.title}</h3>
+                    <p className="text-[#B8B8B8] leading-relaxed">{s.desc}</p>
+                  </div>
+                </div>
+              </FadeInSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="relative px-6 py-32 text-center overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(241,104,35,0.08) 0%, transparent 70%)" }} />
+        <FadeInSection>
+          <div className="relative z-10 max-w-lg mx-auto space-y-6">
+            <h2 className="text-3xl sm:text-4xl font-black text-white">
+              ¿Listo para correr con Coach JJ?
+            </h2>
+            <p className="text-[#B8B8B8] text-lg">
+              7 días gratis. Sin tarjeta. Sin excusas.
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(241,104,35,0.4)" }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => router.push("/register")}
+              className="rounded-xl bg-[#F16823] px-10 py-4 text-base font-semibold text-white hover:opacity-90 transition-opacity"
+            >
+              Crear mi cuenta gratis
+            </motion.button>
+            <p className="text-xs text-[#B8B8B8]/50">
+              Cancela cuando quieras · Acceso completo por 7 días
+            </p>
+          </div>
+        </FadeInSection>
+      </section>
+
+      <footer className="border-t border-[#707070]/20 px-6 py-8 text-center">
+        <p className="text-xs text-[#B8B8B8]/30">
+          © 2026 RunClub Panamá · runclubpty.com
+        </p>
+      </footer>
+    </main>
+  );
+}
