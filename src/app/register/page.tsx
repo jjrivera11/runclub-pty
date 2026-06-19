@@ -15,10 +15,16 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (!acceptedTerms) {
+      setError("Debes aceptar los Términos y Condiciones para continuar.");
+      return;
+    }
 
     if (!nombre.trim()) {
       setError("Ingresa tu nombre completo.");
@@ -154,6 +160,23 @@ export default function RegisterPage() {
                 {showPassword ? "👁‍🗨" : "👁"}
               </button>
             </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <input
+              id="terms"
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[#F16823] cursor-pointer"
+            />
+            <label htmlFor="terms" className="text-sm text-[#B8B8B8] leading-relaxed">
+              He leído y acepto los{" "}
+              <Link href="/terms" target="_blank" className="text-[#F16823] hover:underline">
+                Términos y Condiciones
+              </Link>{" "}
+              de RunClub Panamá.
+            </label>
           </div>
 
           <button
