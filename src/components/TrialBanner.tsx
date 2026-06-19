@@ -27,11 +27,11 @@ export function TrialBanner({ trialEndsAt }: TrialBannerProps) {
         : "bg-[#F16823]/10 border-b border-[#F16823]/20 text-[#F16823]"
     }`}>
       {isUrgent
-        ? `⚠️ Tu prueba gratuita termina ${daysLeft === 0 ? "hoy" : `en ${daysLeft} día${daysLeft > 1 ? "s" : ""}`} — `
-        : `Tu prueba gratuita termina en ${daysLeft} días — `
+        ? `⚠️ Tu prueba gratuita termina ${daysLeft === 0 ? "hoy" : `en ${daysLeft} día${daysLeft > 1 ? "s" : ""}`} — desde $12/mes — `
+        : `Tu prueba gratuita termina en ${daysLeft} días — planes desde $12/mes — `
       }
       <Link href="/pricing" className="underline hover:no-underline">
-        Suscríbete ahora
+        Ver planes
       </Link>
     </div>
   );

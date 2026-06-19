@@ -278,6 +278,73 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <section className="px-6 py-24 max-w-4xl mx-auto">
+        <FadeInSection>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
+            Planes simples, sin sorpresas
+          </h2>
+          <p className="text-[#B8B8B8] text-center mb-12 max-w-lg mx-auto">
+            7 días gratis. Después elige el plan que va con tu objetivo.
+          </p>
+        </FadeInSection>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+          <FadeInSection delay={0.1}>
+            <div className="relative rounded-2xl border-2 border-[#F16823] bg-[#2a2b2d] p-6 flex flex-col">
+              <span className="absolute -top-3 left-4 rounded-full bg-[#F16823] px-3 py-0.5 text-xs font-medium text-white">
+                Más popular
+              </span>
+              <h3 className="text-lg font-bold text-white mt-2">Runner Pro</h3>
+              <p className="text-sm text-[#B8B8B8] mt-1 mb-4">Para corredores que quieren terminar o mejorar su tiempo en carrera</p>
+              <p className="text-4xl font-black text-white mb-6">
+                $12<span className="text-lg font-normal text-[#B8B8B8]">/mes</span>
+              </p>
+              <ul className="space-y-2 text-sm text-[#B8B8B8] mb-8">
+                <li className="flex items-center gap-2"><span className="text-[#F16823]">✓</span> Plan personalizado con IA</li>
+                <li className="flex items-center gap-2"><span className="text-[#F16823]">✓</span> Rutas locales de Panamá</li>
+                <li className="flex items-center gap-2"><span className="text-[#F16823]">✓</span> Adaptación continua</li>
+                <li className="flex items-center gap-2"><span className="text-[#F16823]">✓</span> Seguimiento semanal</li>
+              </ul>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => router.push("/register")}
+                className="mt-auto w-full rounded-xl bg-[#F16823] py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+              >
+                Empezar gratis
+              </motion.button>
+            </div>
+          </FadeInSection>
+          <FadeInSection delay={0.2}>
+            <div className="rounded-2xl border border-[#707070]/40 bg-[#2a2b2d] p-6 flex flex-col">
+              <h3 className="text-lg font-bold text-white mt-2">Transformación</h3>
+              <p className="text-sm text-[#B8B8B8] mt-1 mb-4">Para quienes buscan bajar de peso combinando cardio y fuerza</p>
+              <p className="text-4xl font-black text-white mb-6">
+                $18<span className="text-lg font-normal text-[#B8B8B8]">/mes</span>
+              </p>
+              <ul className="space-y-2 text-sm text-[#B8B8B8] mb-8">
+                <li className="flex items-center gap-2"><span className="text-[#F16823]">✓</span> Plan combinado running y pesas</li>
+                <li className="flex items-center gap-2"><span className="text-[#F16823]">✓</span> Rutinas para gym o casa</li>
+                <li className="flex items-center gap-2"><span className="text-[#F16823]">✓</span> Progresión de carga calculada</li>
+                <li className="flex items-center gap-2"><span className="text-[#F16823]">✓</span> Seguimiento semanal</li>
+              </ul>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => router.push("/register")}
+                className="mt-auto w-full rounded-xl border border-[#F16823] py-3 text-sm font-semibold text-[#F16823] hover:bg-[#F16823]/10 transition-colors"
+              >
+                Empezar gratis
+              </motion.button>
+            </div>
+          </FadeInSection>
+        </div>
+        <FadeInSection delay={0.3}>
+          <p className="text-center text-xs text-[#B8B8B8]/50 mt-8">
+            Sin tarjeta de crédito · Cancela cuando quieras · Pago por transferencia bancaria o tarjeta
+          </p>
+        </FadeInSection>
+      </section>
+
       <section className="relative px-6 py-32 text-center overflow-hidden">
         <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(241,104,35,0.08) 0%, transparent 70%)" }} />
         <FadeInSection>
