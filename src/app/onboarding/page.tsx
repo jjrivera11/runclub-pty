@@ -201,6 +201,9 @@ function OnboardingPageInner() {
   const [condicionSalud, setCondicionSalud] = useState("");
   const [pesoActual, setPesoActual] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
+  const [diaNac, setDiaNac] = useState("");
+  const [mesNac, setMesNac] = useState("");
+  const [anioNac, setAnioNac] = useState("");
   const [edad, setEdad] = useState<number | null>(null);
   const [edadConfirmada, setEdadConfirmada] = useState(false);
   const [estatura, setEstatura] = useState("");
@@ -377,6 +380,18 @@ function OnboardingPageInner() {
     }
   }
 
+  function handleFechaNacimientoManual(dia: string, mes: string, anio: string) {
+    if (dia && mes && anio && anio.length === 4) {
+      const fecha = `${anio}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
+      setFechaNacimiento(fecha);
+      handleFechaNacimiento(fecha);
+    } else {
+      setFechaNacimiento("");
+      setEdad(null);
+      setEdadConfirmada(false);
+    }
+  }
+
   function handleConfirmarEdad() {
     setEdadConfirmada(true);
   }
@@ -519,13 +534,45 @@ function OnboardingPageInner() {
               </h2>
               <div>
                 <p className="text-sm text-[#B8B8B8] mb-2">¿Cuándo naciste?</p>
-                <input
-                  type="date"
-                  value={fechaNacimiento}
-                  onChange={(e) => handleFechaNacimiento(e.target.value)}
-                  max={new Date(new Date().setFullYear(new Date().getFullYear() - 13)).toISOString().split("T")[0]}
-                  className="w-full rounded-lg border border-[#707070] bg-[#2a2b2d] px-4 py-3 text-white outline-none focus:border-[#F16823] focus:ring-1 focus:ring-[#F16823] [color-scheme:dark]"
-                />
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs text-[#B8B8B8] mb-1">Día</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={31}
+                      placeholder="15"
+                      value={diaNac}
+                      onChange={(e) => { setDiaNac(e.target.value); handleFechaNacimientoManual(e.target.value, mesNac, anioNac); }}
+                      className="w-full rounded-lg border border-[#707070] bg-[#2a2b2d] px-3 py-3 text-white outline-none focus:border-[#F16823] focus:ring-1 focus:ring-[#F16823] text-center"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#B8B8B8] mb-1">Mes</label>
+                    <select
+                      value={mesNac}
+                      onChange={(e) => { setMesNac(e.target.value); handleFechaNacimientoManual(diaNac, e.target.value, anioNac); }}
+                      className="w-full rounded-lg border border-[#707070] bg-[#2a2b2d] px-3 py-3 text-white outline-none focus:border-[#F16823] focus:ring-1 focus:ring-[#F16823]"
+                    >
+                      <option value="">—</option>
+                      {["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"].map((m, i) => (
+                        <option key={i} value={String(i + 1)}>{m}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#B8B8B8] mb-1">Año</label>
+                    <input
+                      type="number"
+                      min={1940}
+                      max={new Date().getFullYear() - 13}
+                      placeholder="1990"
+                      value={anioNac}
+                      onChange={(e) => { setAnioNac(e.target.value); handleFechaNacimientoManual(diaNac, mesNac, e.target.value); }}
+                      className="w-full rounded-lg border border-[#707070] bg-[#2a2b2d] px-3 py-3 text-white outline-none focus:border-[#F16823] focus:ring-1 focus:ring-[#F16823] text-center"
+                    />
+                  </div>
+                </div>
               </div>
               {edad !== null && !edadConfirmada && (
                 <div className="rounded-lg border border-[#F16823]/30 bg-[#F16823]/10 px-4 py-3">
@@ -890,13 +937,45 @@ function OnboardingPageInner() {
               </h2>
               <div>
                 <p className="text-sm text-[#B8B8B8] mb-2">¿Cuándo naciste?</p>
-                <input
-                  type="date"
-                  value={fechaNacimiento}
-                  onChange={(e) => handleFechaNacimiento(e.target.value)}
-                  max={new Date(new Date().setFullYear(new Date().getFullYear() - 13)).toISOString().split("T")[0]}
-                  className="w-full rounded-lg border border-[#707070] bg-[#2a2b2d] px-4 py-3 text-white outline-none focus:border-[#F16823] focus:ring-1 focus:ring-[#F16823] [color-scheme:dark]"
-                />
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs text-[#B8B8B8] mb-1">Día</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={31}
+                      placeholder="15"
+                      value={diaNac}
+                      onChange={(e) => { setDiaNac(e.target.value); handleFechaNacimientoManual(e.target.value, mesNac, anioNac); }}
+                      className="w-full rounded-lg border border-[#707070] bg-[#2a2b2d] px-3 py-3 text-white outline-none focus:border-[#F16823] focus:ring-1 focus:ring-[#F16823] text-center"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#B8B8B8] mb-1">Mes</label>
+                    <select
+                      value={mesNac}
+                      onChange={(e) => { setMesNac(e.target.value); handleFechaNacimientoManual(diaNac, e.target.value, anioNac); }}
+                      className="w-full rounded-lg border border-[#707070] bg-[#2a2b2d] px-3 py-3 text-white outline-none focus:border-[#F16823] focus:ring-1 focus:ring-[#F16823]"
+                    >
+                      <option value="">—</option>
+                      {["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"].map((m, i) => (
+                        <option key={i} value={String(i + 1)}>{m}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#B8B8B8] mb-1">Año</label>
+                    <input
+                      type="number"
+                      min={1940}
+                      max={new Date().getFullYear() - 13}
+                      placeholder="1990"
+                      value={anioNac}
+                      onChange={(e) => { setAnioNac(e.target.value); handleFechaNacimientoManual(diaNac, mesNac, e.target.value); }}
+                      className="w-full rounded-lg border border-[#707070] bg-[#2a2b2d] px-3 py-3 text-white outline-none focus:border-[#F16823] focus:ring-1 focus:ring-[#F16823] text-center"
+                    />
+                  </div>
+                </div>
               </div>
               {edad !== null && !edadConfirmada && (
                 <div className="rounded-lg border border-[#F16823]/30 bg-[#F16823]/10 px-4 py-3">
