@@ -249,6 +249,54 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <section className="px-6 py-24 max-w-5xl mx-auto">
+        <FadeInSection>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-2">
+            ¿Por qué no usar ChatGPT?
+          </h2>
+          <p className="text-[#B8B8B8] text-center mb-12 max-w-lg mx-auto">
+            ChatGPT sabe de todo. Coach JJ sabe de ti.
+          </p>
+        </FadeInSection>
+        <FadeInSection delay={0.1}>
+          <div className="overflow-x-auto rounded-2xl border border-[#707070]/40">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[#707070]/40 bg-[#2a2b2d]">
+                  <th className="px-6 py-4 text-left text-[#B8B8B8] font-medium w-1/3"></th>
+                  <th className="px-6 py-4 text-center text-[#B8B8B8] font-medium w-1/3">ChatGPT</th>
+                  <th className="px-6 py-4 text-center text-[#F16823] font-semibold w-1/3">Coach JJ</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#707070]/20">
+                {[
+                  { icon: "🗺️", label: "Rutas", chatgpt: "Rutas genéricas de cualquier ciudad", jj: "Cinta Costera, Parque Omar, Causeway" },
+                  { icon: "🧠", label: "Memoria", chatgpt: "Olvida todo en cada conversación", jj: "Recuerda tu progreso semana a semana" },
+                  { icon: "📅", label: "Plan", chatgpt: "Te da un plan si se lo pides bien", jj: "Tu plan listo al instante, adaptado a tu carrera" },
+                  { icon: "📈", label: "Adaptación", chatgpt: "No sabe si entrenaste o no", jj: "Ajusta tu plan según tus marcas reales" },
+                  { icon: "🇵🇦", label: "Contexto", chatgpt: "No sabe que en Panamá llueve a las 3pm", jj: "Diseñado para el clima y carreras locales" },
+                ].map((row, i) => (
+                  <tr key={i} className="bg-[#1B1C1E] hover:bg-[#2a2b2d]/50 transition-colors">
+                    <td className="px-6 py-4 text-white font-medium">
+                      <span className="mr-2">{row.icon}</span>{row.label}
+                    </td>
+                    <td className="px-6 py-4 text-center text-[#B8B8B8]">{row.chatgpt}</td>
+                    <td className="px-6 py-4 text-center text-white font-medium">
+                      <span className="text-[#F16823] mr-1">✓</span>{row.jj}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </FadeInSection>
+        <FadeInSection delay={0.2}>
+          <p className="text-center text-[#B8B8B8] mt-8 text-sm italic">
+            "ChatGPT es una herramienta increíble. Pero no es tu coach. Coach JJ sí lo es."
+          </p>
+        </FadeInSection>
+      </section>
+
       <section className="px-6 py-24 bg-[#2a2b2d]">
         <div className="max-w-3xl mx-auto">
           <FadeInSection>
