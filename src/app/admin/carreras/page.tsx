@@ -10,10 +10,11 @@ interface Race {
   location: string;
   start_time: string;
   is_active: boolean;
+  registration_url: string | null;
 }
 
 const EMPTY: Omit<Race, "id" | "is_active"> = {
-  name: "", distance_km: 0, race_date: "", location: "", start_time: "06:00",
+  name: "", distance_km: 0, race_date: "", location: "", start_time: "06:00", registration_url: "",
 };
 
 export default function CarrerasPage() {
@@ -62,7 +63,7 @@ export default function CarrerasPage() {
 
   function startEdit(r: Race) {
     setEditing(r.id);
-    setForm({ name: r.name, distance_km: r.distance_km, race_date: r.race_date, location: r.location, start_time: r.start_time ?? "06:00" });
+    setForm({ name: r.name, distance_km: r.distance_km, race_date: r.race_date, location: r.location, start_time: r.start_time ?? "06:00", registration_url: r.registration_url ?? "" });
   }
 
   return (
@@ -97,6 +98,12 @@ export default function CarrerasPage() {
             <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}
               className="w-full rounded-lg border border-[#707070] bg-[#1B1C1E] px-3 py-2 text-white outline-none focus:border-[#F16823]" />
           </div>
+          <div className="col-span-2">
+            <label className="block text-xs text-[#B8B8B8] mb-1">Link de inscripciones <span className="text-[#707070]">(opcional)</span></label>
+            <input type="url" value={form.registration_url ?? ""} onChange={(e) => setForm({ ...form, registration_url: e.target.value || null })}
+              placeholder="https://..."
+              className="w-full rounded-lg border border-[#707070] bg-[#1B1C1E] px-3 py-2 text-white outline-none focus:border-[#F16823] placeholder:text-[#707070]" />
+          </div>
         </div>
         {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
         <div className="mt-4 flex gap-3">
@@ -123,6 +130,7 @@ export default function CarrerasPage() {
                 <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Fecha</th>
                 <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Salida</th>
                 <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Lugar</th>
+                <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Link</th>
                 <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Estado</th>
                 <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Acciones</th>
               </tr>
@@ -135,6 +143,16 @@ export default function CarrerasPage() {
                   <td className="px-4 py-3 text-[#B8B8B8]">{r.race_date}</td>
                   <td className="px-4 py-3 text-[#B8B8B8]">{r.start_time ?? "—"}</td>
                   <td className="px-4 py-3 text-[#B8B8B8]">{r.location}</td>
+                  <td className="px-4 py-3">
+                    {r.registration_url ? (
+                      <a href={r.registration_url} target="_blank" rel="noopener noreferrer"
+                        className="text-[#F16823] hover:underline text-xs">
+                        Inscribirse →
+                      </a>
+                    ) : (
+                      <span className="text-[#707070] text-xs">—</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                       r.is_active ? "bg-green-500/20 text-green-400" : "bg-[#2a2b2d] text-[#B8B8B8] border border-[#707070]"
