@@ -209,7 +209,8 @@ export function PlanCompletionScreen({
             <p className="text-xs text-[#B8B8B8] text-center">Elige tu proximo objetivo</p>
 
             {upcomingRaces.map((r) => {
-              const days = Math.ceil((new Date(r.race_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+              const [ry, rm, rd] = r.race_date.split("-").map(Number);
+              const days = Math.ceil((new Date(ry, rm - 1, rd).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
               return (
                 <button
                   key={r.id}

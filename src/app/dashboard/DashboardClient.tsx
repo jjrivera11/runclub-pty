@@ -539,21 +539,26 @@ function CoachNoteCard({ note }: { note: string }) {
   );
 }
 
-function getGreeting(name: string): string {
+function getGreeting(name: string, sexo?: string | null): string {
   const hour = new Date().toLocaleString("en-US", { timeZone: "America/Panama", hour: "numeric", hour12: false });
   const h = parseInt(hour);
   const firstName = name.split(" ")[0];
-  if (h >= 5 && h < 12) return "Buenos dias, " + firstName + " — lista para arrancar hoy?";
-  if (h >= 12 && h < 18) return "Buenas tardes, " + firstName + " — ya entrenaste hoy?";
-  if (h >= 18 && h < 23) return "Buenas noches, " + firstName + " — revisa tu plan de mañana.";
-  return "Hola, " + firstName + " — Coach JJ tiene tu plan listo.";
+  const listo = sexo === "femenino" ? "lista" : sexo === "masculino" ? "listo" : null;
+  if (h >= 5 && h < 12) return listo
+    ? `Buenos días, ${firstName} — ${listo} para arrancar hoy?`
+    : `Buenos días, ${firstName} — ¿arrancamos hoy?`;
+  if (h >= 12 && h < 18) return listo
+    ? `Buenas tardes, ${firstName} — ¿ya entrenaste hoy?`
+    : `Buenas tardes, ${firstName} — ¿ya entrenaste hoy?`;
+  if (h >= 18 && h < 23) return `Buenas noches, ${firstName} — revisa tu plan de mañana.`;
+  return `Hola, ${firstName} — Coach JJ tiene tu plan listo.`;
 }
 
 export default function DashboardClient() {
   const router = useRouter();
   const [isPremium, setIsPremium] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
-  const [profile, setProfile] = useState<{ full_name?: string; is_verified?: boolean; trial_ends_at?: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ full_name?: string; is_verified?: boolean; trial_ends_at?: string | null; sexo?: string | null } | null>(null);
   const [pesoInicial, setPesoInicial] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
 
@@ -579,7 +584,7 @@ export default function DashboardClient() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("is_premium, is_verified, full_name, trial_ends_at")
+        .select("is_premium, is_verified, full_name, trial_ends_at, sexo")
         .eq("id", user.id)
         .single();
       if (data) {
@@ -768,7 +773,7 @@ export default function DashboardClient() {
         {profile?.full_name && (
           <div className="px-1">
             <p className="text-lg font-semibold text-white">
-              {getGreeting(profile.full_name)}
+              {getGreeting(profile.full_name, profile.sexo)}
             </p>
             {profile.is_verified && (
               <span className="inline-flex items-center gap-1 rounded-full border border-[#F16823]/30 bg-[#F16823]/10 px-2 py-0.5 text-xs font-medium text-[#F16823] mt-1">

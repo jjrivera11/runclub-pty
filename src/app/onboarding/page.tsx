@@ -133,7 +133,8 @@ function calculateWeeksUntilRace(raceDate: string): number {
 }
 
 function formatRaceDate(date: string): string {
-  return new Date(date).toLocaleDateString("es-PA", {
+  const [year, month, day] = date.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("es-PA", {
     day: "numeric",
     month: "long",
     year: "numeric",
