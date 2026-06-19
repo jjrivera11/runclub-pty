@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { CoachJJChat } from "@/components/CoachJJChat";
 
 const TYPEWRITER_TEXTS = [
   "Corre más rápido.",
@@ -83,6 +84,7 @@ const STEPS = [
 
 export default function LandingPage() {
   const router = useRouter();
+  const [showChat, setShowChat] = useState(false);
 
   return (
     <main className="min-h-screen bg-[#1B1C1E] overflow-x-hidden">
@@ -423,6 +425,21 @@ export default function LandingPage() {
           © 2026 RunClub Panamá · runclubpty.com
         </p>
       </footer>
+
+      {showChat && <CoachJJChat onClose={() => setShowChat(false)} />}
+
+      <motion.button
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 2 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setShowChat(true)}
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-[#F16823] px-5 py-3 text-white font-semibold text-sm shadow-lg hover:opacity-90 transition-opacity"
+      >
+        <span>💬</span>
+        <span>Habla con Coach JJ</span>
+      </motion.button>
     </main>
   );
 }
