@@ -27,7 +27,8 @@ export async function GET(request: Request) {
     );
   }
 
-  const providedSecret = request.headers.get("x-cron-secret");
+  const authHeader = request.headers.get("authorization");
+  const providedSecret = authHeader?.replace("Bearer ", "") ?? request.headers.get("x-cron-secret");
   if (!providedSecret || !verifyCronSecret(providedSecret, cronSecret)) {
     return NextResponse.json({ error: "No autorizado." }, { status: 401 });
   }
