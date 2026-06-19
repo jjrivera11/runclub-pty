@@ -53,7 +53,7 @@ export async function middleware(request: NextRequest) {
   // Leer perfil del usuario
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_premium, is_admin")
+    .select("is_premium, is_admin, trial_ends_at")
     .eq("id", user.id)
     .single();
 
@@ -64,6 +64,19 @@ export async function middleware(request: NextRequest) {
     if (!profile?.is_admin) {
       console.log("[middleware] redirección: /dashboard (sin is_admin)");
       return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+  }
+
+  // Soft block: si trial expiró y no es premium → redirect a /pricing
+  // Excluir /pricing y /payment para no crear loop
+  if (!pathname.startsWith("/pricing") && !pathname.startsWith("/payment")) {
+    if (!profile?.is_premium) {
+      const trialEnd = profile?.trial_ends_at ? new Date(profile.trial_ends_at) : null;
+      const trialExpired = !trialEnd || trialEnd < new Date();
+      if (trialExpired) {
+        console.log("[middleware] redirección: /pricing (trial expirado)");
+        return NextResponse.redirect(new URL("/pricing", request.url));
+      }
     }
   }
 

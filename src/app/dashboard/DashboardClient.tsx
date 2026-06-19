@@ -13,6 +13,7 @@ import { WeeklyCheckin } from "@/components/WeeklyCheckin";
 import { ProgressChart } from "@/components/ProgressChart";
 import { PanamaContext } from "@/components/PanamaContext";
 import { PlanCompletionScreen } from "@/components/PlanCompletionScreen";
+import { TrialBanner } from "@/components/TrialBanner";
 import type { DayProgress, PlanDay, PlanWeek, TrainingPlan } from "@/types/plan";
 
 type WeekBadgeType =
@@ -552,7 +553,7 @@ export default function DashboardClient() {
   const router = useRouter();
   const [isPremium, setIsPremium] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
-  const [profile, setProfile] = useState<{ full_name?: string; is_verified?: boolean } | null>(null);
+  const [profile, setProfile] = useState<{ full_name?: string; is_verified?: boolean; trial_ends_at?: string | null } | null>(null);
   const [pesoInicial, setPesoInicial] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
 
@@ -578,7 +579,7 @@ export default function DashboardClient() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("is_premium, is_verified, full_name")
+        .select("is_premium, is_verified, full_name, trial_ends_at")
         .eq("id", user.id)
         .single();
       if (data) {
@@ -760,6 +761,9 @@ export default function DashboardClient() {
         </div>
       </nav>
 
+      {!isPremium && profile?.trial_ends_at && (
+        <TrialBanner trialEndsAt={profile.trial_ends_at} />
+      )}
       <main className="mx-auto max-w-3xl space-y-6 px-4 pb-12 pt-24">
         {profile?.full_name && (
           <div className="px-1">

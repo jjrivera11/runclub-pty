@@ -97,3 +97,33 @@ export async function sendNewBlockEmail(to: string, name: string, blockStart: nu
     `,
   });
 }
+
+export async function sendTrialReminderEmail(to: string, name: string, daysLeft: number) {
+  const isLast = daysLeft === 0;
+  await getResend().emails.send({
+    from: FROM,
+    to,
+    subject: isLast ? "Hoy termina tu prueba gratuita — RunClub Panamá" : `Te quedan ${daysLeft} días de prueba gratuita`,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#1B1C1E;color:#ffffff;padding:40px;border-radius:12px;">
+        <img src="https://runclubpty.com/logo.svg" alt="RunClub Panamá" style="height:60px;margin-bottom:24px;" />
+        <h1 style="color:#F16823;font-size:24px;margin:0 0 16px;">
+          ${isLast ? `Hoy es tu último día, ${name}` : `${name}, te quedan ${daysLeft} días`}
+        </h1>
+        <p style="color:#A3A3A3;line-height:1.6;">
+          ${isLast
+            ? "Tu prueba gratuita de 7 días termina hoy. Suscríbete para seguir entrenando sin interrupciones."
+            : `Tu prueba gratuita termina en ${daysLeft} días. Suscríbete ahora y sigue entrenando sin interrupciones.`
+          }
+        </p>
+        <a href="https://runclubpty.com/pricing" style="display:inline-block;background:#F16823;color:#ffffff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;margin:24px 0;">
+          Ver planes — desde $12/mes
+        </a>
+        <p style="color:#A3A3A3;line-height:1.6;font-size:14px;">Sin tarjeta de crédito requerida para la prueba. Cancela cuando quieras.</p>
+        <div style="margin-top:32px;padding-top:24px;border-top:1px solid #707070;">
+          <p style="color:#707070;font-size:12px;">RunClub Panamá &mdash; runclubpty.com</p>
+        </div>
+      </div>
+    `,
+  });
+}

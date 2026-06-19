@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
+import { sendTrialReminderEmail } from "@/lib/email";
 
 function verifyCronSecret(provided: string, expected: string): boolean {
   try {
@@ -86,6 +87,53 @@ export async function GET(request: Request) {
   for (const subscription of expiringSoon ?? []) {
     // TODO: enviar email de renovación con Resend
     void subscription;
+    processed++;
+  }
+
+  // Emails de reminder de trial — día 5 (2 días restantes) y día 7 (último día)
+  const twoDaysFromNow = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+  const oneDayFromNow = new Date(now.getTime() + 1 * 24 * 60 * 60 * 1000);
+
+  const { data: trialUsers } = await supabase
+    .from("profiles")
+    .select("id, full_name, trial_ends_at, trial_reminder_sent")
+    .eq("is_premium", false)
+    .gte("trial_ends_at", now.toISOString());
+
+  for (const profile of trialUsers ?? []) {
+    const trialEnd = new Date(profile.trial_ends_at);
+    const { data: { user } } = await supabase.auth.admin.getUserById(profile.id);
+    if (!user?.email) continue;
+
+    const name = profile.full_name ?? "Atleta";
+
+    // Email día 5 — faltan 2 días
+    if (trialEnd <= twoDaysFromNow && profile.trial_reminder_sent !== "day5" && profile.trial_reminder_sent !== "day7") {
+      await sendTrialReminderEmail(user.email, name, 2).catch(() => {});
+      await supabase.from("profiles").update({ trial_reminder_sent: "day5" }).eq("id", profile.id);
+      processed++;
+    }
+
+    // Email día 7 — último día
+    if (trialEnd <= oneDayFromNow && profile.trial_reminder_sent !== "day7") {
+      await sendTrialReminderEmail(user.email, name, 0).catch(() => {});
+      await supabase.from("profiles").update({ trial_reminder_sent: "day7" }).eq("id", profile.id);
+      processed++;
+    }
+  }
+
+  // Marcar trials expirados
+  const { data: expiredTrials } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("is_premium", false)
+    .lt("trial_ends_at", now.toISOString());
+
+  for (const profile of expiredTrials ?? []) {
+    await supabase
+      .from("profiles")
+      .update({ subscription_status: "trial_expired" })
+      .eq("id", profile.id);
     processed++;
   }
 
