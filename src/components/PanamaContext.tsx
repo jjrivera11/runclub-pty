@@ -92,12 +92,25 @@ export function PanamaContext({ currentWeek, totalWeeks, track, raceDate, raceNa
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setAddingRace(null); return; }
-    await supabase.from("race_goals").upsert({
-      user_id: user.id,
-      race_id: raceId,
-      is_target: false,
-    }, { onConflict: "user_id,race_id" });
-    setAddedRaces((prev) => new Set([...prev, raceId]));
+
+    if (addedRaces.has(raceId)) {
+      await supabase.from("race_goals")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("race_id", raceId);
+      setAddedRaces((prev) => {
+        const next = new Set(prev);
+        next.delete(raceId);
+        return next;
+      });
+    } else {
+      await supabase.from("race_goals").upsert({
+        user_id: user.id,
+        race_id: raceId,
+        is_target: false,
+      }, { onConflict: "user_id,race_id" });
+      setAddedRaces((prev) => new Set([...prev, raceId]));
+    }
     setAddingRace(null);
   }
 
@@ -162,14 +175,14 @@ export function PanamaContext({ currentWeek, totalWeeks, track, raceDate, raceNa
                       <button
                         type="button"
                         onClick={() => handleAddRaceGoal(r.id)}
-                        disabled={addingRace === r.id || addedRaces.has(r.id)}
+                        disabled={addingRace === r.id}
                         className={`shrink-0 rounded-full px-2 py-0.5 text-xs transition-colors ${
                           addedRaces.has(r.id)
                             ? "bg-green-500/20 text-green-400"
                             : "bg-[#F16823]/10 text-[#F16823] hover:bg-[#F16823]/20"
                         } disabled:opacity-50`}
                       >
-                        {addedRaces.has(r.id) ? "✓ Agregada" : addingRace === r.id ? "..." : "+ Práctica"}
+                        {addedRaces.has(r.id) ? "✓ Quitar del plan" : addingRace === r.id ? "..." : "Agregar a mi Plan"}
                       </button>
                     </div>
                   </div>
