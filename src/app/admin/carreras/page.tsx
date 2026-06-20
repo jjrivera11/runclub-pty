@@ -11,10 +11,11 @@ interface Race {
   start_time: string;
   is_active: boolean;
   registration_url: string | null;
+  is_trail: boolean;
 }
 
 const EMPTY: Omit<Race, "id" | "is_active"> = {
-  name: "", distance_km: 0, race_date: "", location: "", start_time: "06:00", registration_url: "",
+  name: "", distance_km: 0, race_date: "", location: "", start_time: "06:00", registration_url: "", is_trail: false,
 };
 
 export default function CarrerasPage() {
@@ -63,7 +64,7 @@ export default function CarrerasPage() {
 
   function startEdit(r: Race) {
     setEditing(r.id);
-    setForm({ name: r.name, distance_km: r.distance_km, race_date: r.race_date, location: r.location, start_time: r.start_time ?? "06:00", registration_url: r.registration_url ?? "" });
+    setForm({ name: r.name, distance_km: r.distance_km, race_date: r.race_date, location: r.location, start_time: r.start_time ?? "06:00", registration_url: r.registration_url ?? "", is_trail: r.is_trail ?? false });
   }
 
   return (
@@ -104,6 +105,16 @@ export default function CarrerasPage() {
               placeholder="https://..."
               className="w-full rounded-lg border border-[#707070] bg-[#1B1C1E] px-3 py-2 text-white outline-none focus:border-[#F16823] placeholder:text-[#707070]" />
           </div>
+          <div className="col-span-2 flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="is_trail"
+              checked={form.is_trail}
+              onChange={(e) => setForm({ ...form, is_trail: e.target.checked })}
+              className="h-4 w-4 accent-[#F16823]"
+            />
+            <label htmlFor="is_trail" className="text-sm text-[#B8B8B8]">🏔️ Es una carrera trail</label>
+          </div>
         </div>
         {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
         <div className="mt-4 flex gap-3">
@@ -127,6 +138,7 @@ export default function CarrerasPage() {
               <tr className="border-b border-[#707070] bg-[#2a2b2d]">
                 <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Nombre</th>
                 <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Distancia</th>
+                <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Tipo</th>
                 <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Fecha</th>
                 <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Salida</th>
                 <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Lugar</th>
@@ -140,6 +152,13 @@ export default function CarrerasPage() {
                 <tr key={r.id} className="border-b border-[#2a2b2d] hover:bg-[#2a2b2d] transition-colors">
                   <td className="px-4 py-3 text-white">{r.name}</td>
                   <td className="px-4 py-3 text-[#B8B8B8]">{r.distance_km}km</td>
+                  <td className="px-4 py-3">
+                    {r.is_trail ? (
+                      <span className="rounded-full bg-green-500/20 text-green-400 px-2 py-0.5 text-xs">🏔️ Trail</span>
+                    ) : (
+                      <span className="rounded-full bg-[#2a2b2d] text-[#B8B8B8] border border-[#707070] px-2 py-0.5 text-xs">🏁 Road</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-[#B8B8B8]">{r.race_date}</td>
                   <td className="px-4 py-3 text-[#B8B8B8]">{r.start_time ?? "—"}</td>
                   <td className="px-4 py-3 text-[#B8B8B8]">{r.location}</td>

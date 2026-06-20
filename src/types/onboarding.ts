@@ -4,7 +4,7 @@ export type Objetivo = "terminar_carrera" | "mejorar_tiempo" | "bajar_peso";
 
 export type Nivel = "principiante" | "intermedio" | "avanzado";
 
-export type DistanciaCarrera = "5k" | "10k" | "15k" | "21k" | "42k" | "otro";
+export type DistanciaCarrera = "5k" | "10k" | "15k" | "21k" | "42k" | "50k" | "otro";
 
 export interface OnboardingData {
   track: Track;
@@ -25,4 +25,5 @@ export interface OnboardingData {
   exp_pesas: string;
   acceso_gym: boolean;
   condicion_salud: string;
+  is_trail?: boolean;
 }

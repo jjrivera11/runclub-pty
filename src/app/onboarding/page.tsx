@@ -60,6 +60,7 @@ const CUSTOM_RACE_DISTANCIA_OPTIONS: {
   { label: "15K", value: "15k" },
   { label: "21K", value: "21k" },
   { label: "42K", value: "42k" },
+  { label: "50K", value: "50k" },
   { label: "Otra distancia", value: "otro" },
 ];
 
@@ -209,6 +210,7 @@ function OnboardingPageInner() {
   const [estatura, setEstatura] = useState("");
   const [sexo, setSexo] = useState<string | null>(null);
   const [buscaPartner, setBuscaPartner] = useState<boolean | null>(null);
+  const [isTrail, setIsTrail] = useState(false);
   const [partnerZona, setPartnerZona] = useState<string | null>(null);
   const [partnerWhatsapp, setPartnerWhatsapp] = useState("");
   const [partnerGenero, setPartnerGenero] = useState<string | null>(null);
@@ -451,6 +453,7 @@ function OnboardingPageInner() {
       exp_pesas: expPesas ?? "",
       acceso_gym: accesoGym ?? false,
       condicion_salud: condicionSalud,
+      is_trail: isTrail,
     };
 
     const { nivel: nivelActual, dias_semana: diasDisponibles, ...restAnswers } =
@@ -749,6 +752,28 @@ function OnboardingPageInner() {
                   </div>
                 </div>
               )}
+              <div className="rounded-lg border border-[#707070]/40 bg-[#2a2b2d] p-4 mt-2">
+                <p className="text-sm font-medium text-white mb-3">¿Es una carrera trail? 🏔️</p>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsTrail(false)}
+                    className={`flex-1 rounded-lg border py-2.5 text-sm font-medium transition-colors ${!isTrail ? "border-[#F16823] bg-[#F16823]/10 text-[#F16823]" : "border-[#707070] text-[#B8B8B8]"}`}
+                  >
+                    🏁 Road
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsTrail(true)}
+                    className={`flex-1 rounded-lg border py-2.5 text-sm font-medium transition-colors ${isTrail ? "border-[#F16823] bg-[#F16823]/10 text-[#F16823]" : "border-[#707070] text-[#B8B8B8]"}`}
+                  >
+                    🏔️ Trail
+                  </button>
+                </div>
+                {isTrail && (
+                  <p className="text-xs text-[#B8B8B8] mt-2">Coach JJ ajustará tu plan con sesiones de cuestas, desnivel y terreno técnico.</p>
+                )}
+              </div>
             </div>
           );
         case 5:

@@ -555,6 +555,25 @@ function getGreeting(name: string, sexo?: string | null): string {
   return `Hola, ${firstName} — Coach JJ tiene tu plan listo.`;
 }
 
+function TrailPromoBanner({ onDismiss }: { onDismiss: () => void }) {
+  const router = useRouter();
+  return (
+    <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-4 relative">
+      <button onClick={onDismiss} className="absolute top-3 right-3 text-[#707070] hover:text-white text-sm">✕</button>
+      <p className="text-sm font-semibold text-white mb-1">🏔️ ¿Listo para el siguiente reto?</p>
+      <p className="text-xs text-[#B8B8B8] mb-3 leading-relaxed">
+        Completaste tu carrera. El trail running es una experiencia completamente diferente — montaña, naturaleza y un reto mayor. Hay carreras trail en Panamá perfectas para empezar.
+      </p>
+      <button
+        onClick={() => router.push("/onboarding")}
+        className="rounded-lg bg-green-600 px-4 py-2 text-xs font-medium text-white hover:opacity-90 transition-opacity"
+      >
+        Explorar trail running →
+      </button>
+    </div>
+  );
+}
+
 export default function DashboardClient() {
   const router = useRouter();
   const [isPremium, setIsPremium] = useState(false);
@@ -563,6 +582,7 @@ export default function DashboardClient() {
   const [pesoInicial, setPesoInicial] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
+  const [showTrailPromo, setShowTrailPromo] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
   const {
@@ -587,7 +607,7 @@ export default function DashboardClient() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("is_premium, is_verified, full_name, trial_ends_at, sexo")
+        .select("is_premium, is_verified, full_name, trial_ends_at, sexo, is_trail_promo_dismissed")
         .eq("id", user.id)
         .single();
       if (data) {
@@ -605,6 +625,9 @@ export default function DashboardClient() {
       if (data?.is_verified !== undefined) setIsVerified(data.is_verified ?? false);
       if (plan?.completion_celebrated === false && completionPercent === 100) {
         setShowCelebration(true);
+      }
+      if (completionPercent === 100 && !data?.is_trail_promo_dismissed) {
+        setShowTrailPromo(true);
       }
     }
     loadProfile();
@@ -822,6 +845,10 @@ export default function DashboardClient() {
           completionPercent={completionPercent}
           isVerified={isVerified}
         />
+
+        {showTrailPromo && (
+          <TrailPromoBanner onDismiss={() => setShowTrailPromo(false)} />
+        )}
 
         <PlanProgressBar
           completionPercent={completionPercent}

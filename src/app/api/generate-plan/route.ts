@@ -16,6 +16,17 @@ Las carreras en Panama arrancan a las 6:00am.
 Da feedback motivador y especifico como un coach personal en cada sesion.
 Responde SOLO con JSON valido, sin markdown ni texto adicional.`;
 
+const TRAIL_SYSTEM_PROMPT = `${RUNNER_SYSTEM_PROMPT}
+Eres ademas experto en trail running en Panama. Conoces las rutas de montana como La India Dormida en El Valle, el Cerro Tute en Santa Fe, Altos de Campana en La Chorrera y el Pipeline Road en Colon.
+Para planes de trail:
+- Mide el esfuerzo en tiempo en pie (time on feet) ademas de kilometros
+- Incluye sesiones especificas de subidas (hill repeats) y bajadas tecnicas
+- La regla del 10% aplica al tiempo total, no solo a la distancia
+- Incluye entrenamiento de fuerza para piernas (sentadillas, lunges, step-ups)
+- Menciona el desnivel positivo esperado en sesiones largas
+- Las semanas de recuperacion son mas importantes en trail que en road
+- Para distancias de 42K o mas, incluye sesiones de back-to-back (sabado y domingo largos)`;
+
 const TRANSFORMACION_SYSTEM_PROMPT = `${RUNNER_SYSTEM_PROMPT}
 Tambien eres experto en entrenamiento funcional, pesas y acondicionamiento fisico para perdida de peso en clima tropical.
 Disenias planes que combinan fuerza, cardio e HIIT segun el acceso a gimnasio del atleta.`;
@@ -28,7 +39,7 @@ interface OnboardingAnswersRow extends OnboardingData {
   estatura_cm?: number;
 }
 
-function buildRunnerBlockMessage(answers: OnboardingAnswersRow, blockStart: number, blockEnd: number, totalWeeks: number, adaptation?: string | null, spotsContext?: string | null): string {
+function buildRunnerBlockMessage(answers: OnboardingAnswersRow, blockStart: number, blockEnd: number, totalWeeks: number, adaptation?: string | null, spotsContext?: string | null, isTrail?: boolean): string {
   return `Eres Coach JJ, el coach personal de este corredor. Crea un plan de entrenamiento para las semanas ${blockStart} a ${blockEnd} de ${totalWeeks} totales.
 
 Perfil del atleta:
@@ -44,6 +55,8 @@ Perfil del atleta:
 - Lesion: ${answers.lesion?.trim() || "ninguna"}
 - Tiempo reciente: ${answers.tiempo_reciente?.trim() || "no especificado"}
 - Horario preferido: ${answers.horario_entrenamiento}
+- Modalidad: ${isTrail ? "TRAIL RUNNING — terreno de montaña, desnivel, tecnico" : "ROAD RUNNING — asfalto y pista"}
+${isTrail ? "- Incluir sesiones de hill repeats, bajadas tecnicas y tiempo en pie (time on feet)" : ""}
 - Semanas totales del plan: ${totalWeeks}
 - Bloque actual: semanas ${blockStart} a ${blockEnd}
 
@@ -254,7 +267,8 @@ export async function POST(request: Request) {
         : "";
 
     const isRunner = onboarding.track === "runner";
-    const system = isRunner ? RUNNER_SYSTEM_PROMPT : TRANSFORMACION_SYSTEM_PROMPT;
+    const isTrail = !!(onboarding as OnboardingAnswersRow & { is_trail?: boolean }).is_trail;
+    const system = isTrail ? TRAIL_SYSTEM_PROMPT : (isRunner ? RUNNER_SYSTEM_PROMPT : TRANSFORMACION_SYSTEM_PROMPT);
 
     if (isNextBlock && existingPlanId) {
       const { data: existingPlan } = await supabase
@@ -308,7 +322,7 @@ export async function POST(request: Request) {
         : null;
 
       const userMessage = isRunner
-        ? buildRunnerBlockMessage(onboarding, blockStart, blockEnd, totalWeeks, performanceNote, spotsContext)
+        ? buildRunnerBlockMessage(onboarding, blockStart, blockEnd, totalWeeks, performanceNote, spotsContext, isTrail)
         : buildTransformacionBlockMessage(onboarding, blockStart, blockEnd, totalWeeks, performanceNote, spotsContext);
 
       if (coachNote) {
@@ -356,7 +370,7 @@ export async function POST(request: Request) {
     const blockEnd = Math.min(BLOCK_SIZE, totalWeeks);
 
     const userMessage = isRunner
-      ? buildRunnerBlockMessage(onboarding, 1, blockEnd, totalWeeks, null, spotsContext)
+      ? buildRunnerBlockMessage(onboarding, 1, blockEnd, totalWeeks, null, spotsContext, isTrail)
       : buildTransformacionBlockMessage(onboarding, 1, blockEnd, totalWeeks, null, spotsContext);
 
     const planJson = await fetchBlockFromClaude(system, userMessage);

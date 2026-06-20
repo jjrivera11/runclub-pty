@@ -8,6 +8,7 @@ interface Race {
   race_date: string;
   distance_km: number;
   location: string;
+  is_trail?: boolean;
 }
 
 interface WeatherData {
@@ -62,7 +63,7 @@ export function PanamaContext({ currentWeek, totalWeeks, track, raceDate, raceNa
       const today = new Date().toISOString().split("T")[0];
       const { data } = await supabase
         .from("races")
-        .select("id, name, race_date, distance_km, location")
+        .select("id, name, race_date, distance_km, location, is_trail")
         .eq("is_active", true)
         .gte("race_date", today)
         .order("race_date")
@@ -133,7 +134,10 @@ export function PanamaContext({ currentWeek, totalWeeks, track, raceDate, raceNa
                 return (
                   <div key={r.id} className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-white">{r.name}</p>
+                      <p className="text-xs text-white flex items-center gap-1">
+                        {r.name}
+                        {r.is_trail && <span className="text-green-400 text-xs">🏔️</span>}
+                      </p>
                       <p className="text-xs text-[#B8B8B8]">{fechaTexto} · {r.distance_km}km · {r.location}</p>
                     </div>
                     <span className="text-xs text-[#B8B8B8] shrink-0 ml-2">{countdown}</span>
