@@ -274,9 +274,10 @@ export async function POST(request: Request) {
 
       const raceGoalsContext = raceGoals && raceGoals.length > 0
         ? "\n\nCARRERAS DE PRÁCTICA DEL ATLETA:\n" +
-          raceGoals.map((g: { races: { name: string; race_date: string; distance_km: number; is_trail: boolean } | null }) =>
-            g.races ? `- ${g.races.name} el ${g.races.race_date} (${g.races.distance_km}km${g.races.is_trail ? " TRAIL" : ""}) — planifica un mini-tapering de 2-3 días antes y recuperación de 2-3 días después.` : ""
-          ).filter(Boolean).join("\n")
+          raceGoals.map((g: { races: { name: string; race_date: string; distance_km: number; is_trail: boolean }[] }) => {
+            const race = Array.isArray(g.races) ? g.races[0] : null;
+            return race ? `- ${race.name} el ${race.race_date} (${race.distance_km}km${race.is_trail ? " TRAIL" : ""}) — planifica un mini-tapering de 2-3 días antes y recuperación de 2-3 días después.` : "";
+          }).filter(Boolean).join("\n")
         : "";
 
     const isRunner = onboarding.track === "runner";
