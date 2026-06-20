@@ -169,7 +169,7 @@ export function PanamaContext({ currentWeek, totalWeeks, track, raceDate, raceNa
                             : "bg-[#F16823]/10 text-[#F16823] hover:bg-[#F16823]/20"
                         } disabled:opacity-50`}
                       >
-                        {addedRaces.has(r.id) ? "✓ Agregada" : addingRace === r.id ? "..." : "+ Meta"}
+                        {addedRaces.has(r.id) ? "✓ Agregada" : addingRace === r.id ? "..." : "+ Carrera de Práctica"}
                       </button>
                     </div>
                   </div>
