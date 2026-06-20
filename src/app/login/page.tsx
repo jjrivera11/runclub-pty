@@ -13,6 +13,9 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [resetMode, setResetMode] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -37,6 +40,22 @@ export default function LoginPage() {
     console.log("Login exitoso, redirigiendo...");
     router.push("/dashboard");
     router.refresh();
+  }
+
+  async function handleReset(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setResetLoading(true);
+    const supabase = createClient();
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    });
+    if (resetError) {
+      setError("No se pudo enviar el correo. Verifica tu email e intenta de nuevo.");
+    } else {
+      setResetSent(true);
+    }
+    setResetLoading(false);
   }
 
   return (
@@ -100,6 +119,16 @@ export default function LoginPage() {
             </div>
           </div>
 
+          <div className="text-right">
+            <button
+              type="button"
+              onClick={() => { setResetMode(true); setError(null); }}
+              className="text-xs text-[#B8B8B8] hover:text-[#F16823] transition-colors"
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -116,6 +145,60 @@ export default function LoginPage() {
           </Link>
         </p>
       </div>
+
+      {resetMode && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="w-full max-w-sm bg-[#1B1C1E] rounded-2xl border border-[#707070]/40 p-6">
+            {resetSent ? (
+              <div className="text-center space-y-4">
+                <span className="text-4xl">📬</span>
+                <h3 className="text-lg font-semibold text-white">Revisa tu correo</h3>
+                <p className="text-sm text-[#B8B8B8]">
+                  Te enviamos un link para restablecer tu contraseña a <span className="text-white">{email}</span>.
+                </p>
+                <button
+                  onClick={() => { setResetMode(false); setResetSent(false); }}
+                  className="w-full rounded-lg bg-[#F16823] py-3 text-sm font-medium text-white hover:opacity-90 transition-opacity"
+                >
+                  Volver al login
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-white">Restablecer contraseña</h3>
+                  <button onClick={() => setResetMode(false)} className="text-[#B8B8B8] hover:text-white text-xl">✕</button>
+                </div>
+                <p className="text-sm text-[#B8B8B8]">
+                  Ingresa tu correo y te enviaremos un link para crear una nueva contraseña.
+                </p>
+                {error && (
+                  <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                    {error}
+                  </p>
+                )}
+                <form onSubmit={handleReset} className="space-y-4">
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="tu@correo.com"
+                    className="w-full rounded-lg border border-[#707070] bg-[#2a2b2d] px-4 py-3 text-white placeholder:text-[#B8B8B8] outline-none focus:border-[#F16823] focus:ring-1 focus:ring-[#F16823]"
+                  />
+                  <button
+                    type="submit"
+                    disabled={resetLoading}
+                    className="w-full rounded-lg bg-[#F16823] py-3 text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+                  >
+                    {resetLoading ? "Enviando..." : "Enviar link de recuperación"}
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </main>
   );
 }
