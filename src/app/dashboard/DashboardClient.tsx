@@ -712,8 +712,8 @@ export default function DashboardClient() {
         weekNumber,
         dayName,
         title: day.titulo,
-        distanceKm: day.distancia_km,
-        durationMin: day.duracion_min,
+        distanceKm: day.distancia_km ?? undefined,
+        durationMin: day.duracion_min ?? undefined,
       });
     } else {
       await toggleDay(weekNumber, dayName);
