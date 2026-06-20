@@ -16,7 +16,10 @@ export function WeeklyCheckin({ planId, weekNumber, track, pesoInicial }: Weekly
   const [existing, setExisting] = useState<{ peso_lbs?: number; tiempo_libre?: string } | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+
+  const isRunner = track === "runner";
 
   useEffect(() => {
     async function load() {
@@ -44,8 +47,41 @@ export function WeeklyCheckin({ planId, weekNumber, track, pesoInicial }: Weekly
     load();
   }, [planId, weekNumber]);
 
+  function validarTiempo(tiempo: string, distancia: string): string | null {
+    const partes = tiempo.split(":");
+    const horas = parseInt(partes[0] ?? "0") || 0;
+    const minutos = parseInt(partes[1] ?? "0") || 0;
+    const segundos = parseInt(partes[2] ?? "0") || 0;
+    const totalSegundos = horas * 3600 + minutos * 60 + segundos;
+
+    if (totalSegundos === 0) return null;
+
+    const recordes: Record<string, number> = {
+      "400m": 43,
+      "1K": 131,
+      "3K": 440,
+      "5K": 755,
+    };
+
+    const record = recordes[distancia];
+    if (!record) return null;
+
+    if (totalSegundos < record) {
+      return `⚡ Ese tiempo rompe el récord mundial de ${distancia}. Coach JJ te cree, pero revisa los números.`;
+    }
+    return null;
+  }
+
   async function handleSave() {
     if (!userId) return;
+    if (isRunner && tiempo && distancia) {
+      const error = validarTiempo(tiempo, distancia);
+      if (error) {
+        setValidationError(error);
+        return;
+      }
+    }
+    setValidationError(null);
     setSaving(true);
     const supabase = createClient();
     const tiempoValue = track === "runner" ? tiempo + "|" + distancia : null;
@@ -62,7 +98,6 @@ export function WeeklyCheckin({ planId, weekNumber, track, pesoInicial }: Weekly
     setSaved(true);
   }
 
-  const isRunner = track === "runner";
   const hasData = isRunner ? (tiempo.length > 0 || distancia.length > 0) : peso.length > 0;
 
   if (saved || existing) {
@@ -190,6 +225,12 @@ export function WeeklyCheckin({ planId, weekNumber, track, pesoInicial }: Weekly
             <p className="text-xs text-[#B8B8B8]/60">Peso inicial: {pesoInicial} lbs</p>
           )}
         </div>
+      )}
+
+      {validationError && (
+        <p className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-3 py-2.5 text-xs text-yellow-400">
+          {validationError}
+        </p>
       )}
 
       <button
