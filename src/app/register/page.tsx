@@ -80,8 +80,7 @@ export default function RegisterPage() {
       sendWelcomeEmail(data.user.email, nombre.trim()).catch(() => {});
     }
 
-    router.push("/onboarding");
-    router.refresh();
+    router.push("/verify-email");
   }
 
   return (
