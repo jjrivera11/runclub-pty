@@ -14,6 +14,7 @@ import { ProgressChart } from "@/components/ProgressChart";
 import { PanamaContext } from "@/components/PanamaContext";
 import { PlanCompletionScreen } from "@/components/PlanCompletionScreen";
 import { TrialBanner } from "@/components/TrialBanner";
+import { CalendarExportModal } from "@/components/CalendarExportModal";
 import type { DayProgress, PlanDay, PlanWeek, TrainingPlan } from "@/types/plan";
 
 type WeekBadgeType =
@@ -561,6 +562,7 @@ export default function DashboardClient() {
   const [profile, setProfile] = useState<{ full_name?: string; is_verified?: boolean; trial_ends_at?: string | null; sexo?: string | null } | null>(null);
   const [pesoInicial, setPesoInicial] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
 
   const {
     plan,
@@ -735,7 +737,7 @@ export default function DashboardClient() {
               </button>
               <button
                 type="button"
-                onClick={() => handleExportCalendar(plan)}
+                onClick={() => setShowCalendarModal(true)}
                 className="text-[#B8B8B8] hover:text-white transition-colors"
                 aria-label="Exportar calendario"
                 title="Exportar a calendario"
@@ -880,6 +882,13 @@ export default function DashboardClient() {
           <PartnerSection track={plan.track} />
         )}
       </main>
+
+      {showCalendarModal && plan && (
+        <CalendarExportModal
+          onClose={() => setShowCalendarModal(false)}
+          onDownload={() => handleExportCalendar(plan)}
+        />
+      )}
 
       {celebrationWeek !== null && (
         <CelebrationToast
