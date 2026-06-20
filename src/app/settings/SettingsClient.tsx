@@ -355,6 +355,21 @@ export default function SettingsClient({ userId, email, profile, subscription }:
           </div>
         </Section>
 
+        <Section title="¿Quieres cambiar tu plan?" description="Contáctanos y te ayudamos a cambiar entre Runner Pro y Transformación.">
+          <p className="text-sm text-[#B8B8B8]">
+            El cambio de plan implica ajuste de precio y regeneración de tu plan de entrenamiento. Te guiamos en el proceso.
+          </p>
+          <a
+            href="https://wa.me/14038998916?text=Hola%20Coach%20JJ%2C%20quiero%20cambiar%20mi%20plan%20de%20entrenamiento."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full rounded-lg bg-green-600 px-4 py-2.5 text-sm font-medium text-white hover:opacity-90 transition-opacity"
+          >
+            <span>💬</span>
+            Contactar por WhatsApp
+          </a>
+        </Section>
+
       </div>
     </main>
   );
