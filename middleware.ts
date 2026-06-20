@@ -14,6 +14,8 @@ export async function middleware(request: NextRequest) {
     "/api/webhooks",
     "/api/cron",
     "/generating",
+    "/verify-email",
+    "/terms",
   ];
   if (publicPaths.some((p) => pathname.startsWith(p))) {
     console.log("[middleware] redirección: ninguna (ruta pública)");
