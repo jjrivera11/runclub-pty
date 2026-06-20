@@ -40,7 +40,7 @@ const FAQ = [
       },
       {
         q: "¿Cómo exporto mi plan al calendario?",
-        a: "En tu dashboard, haz click en el ícono de calendario en la barra superior. Aparecerán instrucciones paso a paso según tu dispositivo (iPhone, Android, Mac o Windows) y podrás descargar el archivo .ics con todas tus sesiones.",
+        a: "En tu dashboard, toca el botón 'Menú' en la esquina superior derecha. Selecciona 'Exportar calendario' y aparecerán instrucciones paso a paso según tu dispositivo (iPhone, Android, Mac o Windows) para descargar el archivo .ics con todas tus sesiones.",
       },
       {
         q: "¿Las rutas son reales y actualizadas?",
