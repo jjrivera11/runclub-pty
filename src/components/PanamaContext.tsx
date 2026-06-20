@@ -149,27 +149,27 @@ export function PanamaContext({ currentWeek, totalWeeks, track, raceDate, raceNa
                 const fechaTexto = new Date(year, month - 1, day).toLocaleDateString("es-PA", { day: "numeric", month: "short" });
                 const countdown = days <= 7 ? "Esta semana" : days <= 14 ? "En 2 sem" : "En " + Math.ceil(days / 7) + " sem";
                 return (
-                  <div key={r.id} className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
+                  <div key={r.id} className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
                       <p className="text-xs text-white flex items-center gap-1">
                         {r.name}
                         {r.is_trail && <span className="text-green-400 text-xs">🏔️</span>}
                       </p>
-                      <p className="text-xs text-[#B8B8B8]">{fechaTexto} · {r.distance_km}km · {r.location}</p>
+                      <span className="text-xs text-[#B8B8B8] shrink-0">{countdown}</span>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-xs text-[#B8B8B8]">{countdown}</span>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-xs text-[#B8B8B8]">{fechaTexto} · {r.distance_km}km · {r.location}</p>
                       <button
                         type="button"
                         onClick={() => handleAddRaceGoal(r.id)}
                         disabled={addingRace === r.id || addedRaces.has(r.id)}
-                        className={`rounded-full px-2 py-0.5 text-xs transition-colors ${
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-xs transition-colors ${
                           addedRaces.has(r.id)
                             ? "bg-green-500/20 text-green-400"
                             : "bg-[#F16823]/10 text-[#F16823] hover:bg-[#F16823]/20"
                         } disabled:opacity-50`}
                       >
-                        {addedRaces.has(r.id) ? "✓ Agregada" : addingRace === r.id ? "..." : "+ Carrera de Práctica"}
+                        {addedRaces.has(r.id) ? "✓ Agregada" : addingRace === r.id ? "..." : "+ Práctica"}
                       </button>
                     </div>
                   </div>
