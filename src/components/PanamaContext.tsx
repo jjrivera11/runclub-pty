@@ -101,14 +101,14 @@ export function PanamaContext({ currentWeek, totalWeeks, track, raceDate, raceNa
         {weather ? (
           <div className="rounded-lg bg-[#1B1C1E] px-3 py-3">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-medium text-[#F16823]">Clima en Panama hoy</p>
-              <span className="text-xs text-white font-medium">{weather.temp}C - {weather.humidity}% humedad</span>
+              <p className="text-xs font-medium text-[#F16823]">Clima en Panamá hoy</p>
+              <span className="text-xs text-white font-medium">{weather.temp}°C · {weather.humidity}% humedad</span>
             </div>
             <p className="text-xs text-[#B8B8B8] leading-relaxed">{getWeatherAdvice(weather.temp, weather.humidity)}</p>
           </div>
         ) : (
           <div className="rounded-lg bg-[#1B1C1E] px-3 py-3">
-            <p className="text-xs font-medium text-[#F16823] mb-1">Clima en Panama</p>
+            <p className="text-xs font-medium text-[#F16823] mb-1">Clima en Panamá</p>
             <p className="text-xs text-[#B8B8B8] leading-relaxed">En Panama la temperatura puede superar los 32C con alta humedad. Hidratate cada 15-20 min.</p>
           </div>
         )}
