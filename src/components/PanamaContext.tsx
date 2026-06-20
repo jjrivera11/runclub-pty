@@ -162,29 +162,27 @@ export function PanamaContext({ currentWeek, totalWeeks, track, raceDate, raceNa
                 const fechaTexto = new Date(year, month - 1, day).toLocaleDateString("es-PA", { day: "numeric", month: "short" });
                 const countdown = days <= 7 ? "Esta semana" : days <= 14 ? "En 2 sem" : "En " + Math.ceil(days / 7) + " sem";
                 return (
-                  <div key={r.id} className="space-y-1.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-xs text-white flex items-center gap-1">
+                  <div key={r.id} className="flex items-center gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-white flex items-center gap-1 truncate">
                         {r.name}
-                        {r.is_trail && <span className="text-green-400 text-xs">🏔️</span>}
+                        {r.is_trail && <span className="text-green-400">🏔️</span>}
                       </p>
-                      <span className="text-xs text-[#B8B8B8] shrink-0">{countdown}</span>
+                      <p className="text-xs text-[#B8B8B8]">{fechaTexto} · {r.distance_km}km</p>
                     </div>
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-xs text-[#B8B8B8]">{fechaTexto} · {r.distance_km}km · {r.location}</p>
-                      <button
-                        type="button"
-                        onClick={() => handleAddRaceGoal(r.id)}
-                        disabled={addingRace === r.id}
-                        className={`shrink-0 rounded-full px-2 py-0.5 text-xs transition-colors ${
-                          addedRaces.has(r.id)
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-[#F16823]/10 text-[#F16823] hover:bg-[#F16823]/20"
-                        } disabled:opacity-50`}
-                      >
-                        {addedRaces.has(r.id) ? "✓ Quitar del plan" : addingRace === r.id ? "..." : "Agregar a mi Plan"}
-                      </button>
-                    </div>
+                    <span className="text-xs text-[#B8B8B8] shrink-0">{countdown}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleAddRaceGoal(r.id)}
+                      disabled={addingRace === r.id}
+                      className={`shrink-0 rounded-full px-2 py-1 text-xs transition-colors ${
+                        addedRaces.has(r.id)
+                          ? "bg-green-500/20 text-green-400"
+                          : "bg-[#F16823]/10 text-[#F16823] hover:bg-[#F16823]/20"
+                      } disabled:opacity-50`}
+                    >
+                      {addedRaces.has(r.id) ? "✓ Agregada" : addingRace === r.id ? "..." : "+ Plan"}
+                    </button>
                   </div>
                 );
               })}
