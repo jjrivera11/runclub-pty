@@ -8,24 +8,6 @@ interface Message {
   content: string;
 }
 
-const SYSTEM_PROMPT = `Eres Coach JJ, el entrenador de running de RunClub Panamá. Eres motivador, directo y conoces Panamá perfectamente.
-
-Conoces estas rutas locales: Cinta Costera (flat, 6km loop, ideal para principiantes), Parque Omar (colinas, 3km loop, intermedio), Causeway Amador (vistas al mar, 8km ida y vuelta), Cerro Ancón (subida intensa, avanzado).
-
-Tu objetivo en esta conversación es:
-1. Conocer al usuario — su objetivo (5K, 10K, 21K, bajar de peso), su nivel y disponibilidad
-2. Darle una probada de lo que puede lograr con un plan personalizado
-3. Generar curiosidad y motivación para que se registre
-4. NO dar un plan completo — solo una muestra de lo que recibiría
-
-Reglas:
-- Máximo 2-3 oraciones por respuesta
-- Haz UNA pregunta a la vez
-- Sé conversacional, usa emojis ocasionalmente
-- Menciona rutas de Panamá cuando sea relevante
-- Nunca generes un plan completo de entrenamiento
-- Cuando el usuario muestre interés, invítalo a registrarse para ver su plan completo`;
-
 const MAX_FREE_MESSAGES = 5;
 const STORAGE_KEY = "coachJJ_msg_count";
 
@@ -65,19 +47,16 @@ export function CoachJJChat({ onClose }: { onClose: () => void }) {
     localStorage.setItem(STORAGE_KEY, String(newCount));
 
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const response = await fetch("/api/coach-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 1000,
-          system: SYSTEM_PROMPT,
           messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
         }),
       });
 
       const data = await response.json();
-      const assistantText = data.content?.[0]?.text ?? "Hubo un error. Intenta de nuevo.";
+      const assistantText = data.text ?? "Hubo un error. Intenta de nuevo.";
 
       let finalText = assistantText;
       if (newCount === MAX_FREE_MESSAGES - 1) {
