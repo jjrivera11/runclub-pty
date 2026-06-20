@@ -63,6 +63,20 @@ export default function PagosPage() {
       current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     }, { onConflict: "user_id" });
 
+    // Aplicar descuento de referido al referidor
+    const { data: paidProfile } = await supabase
+      .from("profiles")
+      .select("referred_by")
+      .eq("id", payment.user_id)
+      .single();
+
+    if (paidProfile?.referred_by) {
+      await supabase
+        .from("profiles")
+        .update({ referral_discount_pct: 20, referral_discount_used: false })
+        .eq("id", paidProfile.referred_by);
+    }
+
     setProcessing(null);
     load();
   }
