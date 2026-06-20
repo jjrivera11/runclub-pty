@@ -15,6 +15,7 @@ export default function UsuariosPage() {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [processing, setProcessing] = useState<string | null>(null);
 
   async function load() {
     const supabase = createClient();
@@ -29,8 +30,38 @@ export default function UsuariosPage() {
   useEffect(() => { load(); }, []);
 
   async function togglePremium(id: string, current: boolean) {
+    setProcessing(id + "_premium");
     const supabase = createClient();
     await supabase.from("profiles").update({ is_premium: !current }).eq("id", id);
+    setProcessing(null);
+    load();
+  }
+
+  async function changeTrack(id: string, newTrack: string) {
+    if (!confirm(`¿Cambiar el plan a "${newTrack}"? El usuario deberá regenerar su plan manualmente.`)) return;
+    setProcessing(id + "_track");
+    const supabase = createClient();
+    await supabase.from("profiles").update({ track: newTrack }).eq("id", id);
+    setProcessing(null);
+    load();
+  }
+
+  async function regeneratePlan(id: string) {
+    if (!confirm("¿Regenerar el plan de este usuario? Se borrará el plan actual y se generará uno nuevo.")) return;
+    setProcessing(id + "_plan");
+    const supabase = createClient();
+
+    // Desactivar plan actual
+    await supabase
+      .from("training_plans")
+      .update({ is_active: false })
+      .eq("user_id", id)
+      .eq("is_active", true);
+
+    // Llamar al generate-plan como si fuera el usuario
+    // El admin genera el plan manualmente via SQL — mostrar instrucción
+    alert("Plan anterior desactivado. El usuario debe ir a /generating para generar su nuevo plan, o puedes generarlo desde Supabase.");
+    setProcessing(null);
     load();
   }
 
@@ -59,15 +90,25 @@ export default function UsuariosPage() {
                 <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Track</th>
                 <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Estado</th>
                 <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Premium</th>
-                <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Accion</th>
+                <th className="px-4 py-3 text-left text-[#B8B8B8] font-medium">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((u) => (
                 <tr key={u.id} className="border-b border-[#2a2b2d] hover:bg-[#2a2b2d] transition-colors">
                   <td className="px-4 py-3 text-white">{u.full_name ?? "—"}</td>
-                  <td className="px-4 py-3 text-[#B8B8B8]">{u.track ?? "—"}</td>
-                  <td className="px-4 py-3 text-[#B8B8B8]">{u.subscription_status ?? "—"}</td>
+                  <td className="px-4 py-3">
+                    <select
+                      value={u.track ?? "runner"}
+                      onChange={(e) => changeTrack(u.id, e.target.value)}
+                      disabled={processing === u.id + "_track"}
+                      className="rounded-lg border border-[#707070] bg-[#1B1C1E] px-2 py-1 text-xs text-white outline-none focus:border-[#F16823] disabled:opacity-50"
+                    >
+                      <option value="runner">Runner Pro</option>
+                      <option value="transformacion">Transformación</option>
+                    </select>
+                  </td>
+                  <td className="px-4 py-3 text-[#B8B8B8] text-xs">{u.subscription_status ?? "—"}</td>
                   <td className="px-4 py-3">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                       u.is_premium ? "bg-[#F16823] text-white" : "bg-[#2a2b2d] text-[#B8B8B8] border border-[#707070]"
@@ -76,12 +117,22 @@ export default function UsuariosPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <button
-                      onClick={() => togglePremium(u.id, u.is_premium)}
-                      className="rounded-lg border border-[#707070] px-3 py-1 text-xs text-white hover:border-[#F16823] hover:text-[#F16823] transition-colors"
-                    >
-                      {u.is_premium ? "Quitar premium" : "Dar premium"}
-                    </button>
+                    <div className="flex gap-2 flex-wrap">
+                      <button
+                        onClick={() => togglePremium(u.id, u.is_premium)}
+                        disabled={processing === u.id + "_premium"}
+                        className="rounded-lg border border-[#707070] px-3 py-1 text-xs text-white hover:border-[#F16823] hover:text-[#F16823] transition-colors disabled:opacity-50"
+                      >
+                        {processing === u.id + "_premium" ? "..." : u.is_premium ? "Quitar premium" : "Dar premium"}
+                      </button>
+                      <button
+                        onClick={() => regeneratePlan(u.id)}
+                        disabled={processing === u.id + "_plan"}
+                        className="rounded-lg border border-[#707070] px-3 py-1 text-xs text-white hover:border-yellow-500 hover:text-yellow-400 transition-colors disabled:opacity-50"
+                      >
+                        {processing === u.id + "_plan" ? "..." : "↺ Reset plan"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
