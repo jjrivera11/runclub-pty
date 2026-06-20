@@ -563,6 +563,7 @@ export default function DashboardClient() {
   const [pesoInicial, setPesoInicial] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
   const {
     plan,
@@ -717,53 +718,81 @@ export default function DashboardClient() {
   return (
     <div className="min-h-full bg-[#1B1C1E] text-white">
       <nav className="no-print fixed inset-x-0 top-0 z-40 border-b border-[#707070]/30 bg-[#1B1C1E]">
-        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-4 py-5">
+        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
           <RunClubLogo size="sm" showText={false} />
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <span className="text-sm">🔥</span>
-              <span className="text-sm font-medium text-white">{streak}</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <span className="text-base">🔥</span>
+              <span className="text-sm font-semibold text-white">{streak}</span>
               <span className="text-xs text-[#B8B8B8]">{streak === 1 ? "día" : "días"}</span>
             </div>
-            <div className="hidden sm:flex items-center gap-2">
+            <div className="relative">
               <button
                 type="button"
-                onClick={handleDownloadPDF}
-                className="text-[#B8B8B8] hover:text-white transition-colors"
-                aria-label="Descargar PDF"
-                title="Exportar plan a PDF"
+                onClick={() => setShowMenu((v) => !v)}
+                className="flex items-center gap-1.5 rounded-lg border border-[#707070]/60 bg-[#2a2b2d] px-3 py-2 text-sm text-white hover:border-[#F16823] transition-colors"
+                aria-label="Menú"
               >
-                <i className="ti ti-file-type-pdf" style={{ fontSize: 20 }} aria-hidden="true"></i>
+                <i className="ti ti-menu-2" style={{ fontSize: 18 }} aria-hidden="true"></i>
+                <span className="text-xs">Menú</span>
               </button>
-              <button
-                type="button"
-                onClick={() => setShowCalendarModal(true)}
-                className="text-[#B8B8B8] hover:text-white transition-colors"
-                aria-label="Exportar calendario"
-                title="Exportar a calendario"
-              >
-                <i className="ti ti-calendar-event" style={{ fontSize: 20 }} aria-hidden="true"></i>
-              </button>
+
+              {showMenu && (
+                <>
+                  {/* Backdrop */}
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowMenu(false)}
+                  />
+                  {/* Dropdown */}
+                  <div className="absolute right-0 top-11 z-50 w-52 rounded-xl border border-[#707070]/40 bg-[#2a2b2d] shadow-xl overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => { handleDownloadPDF(); setShowMenu(false); }}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#B8B8B8] hover:bg-[#1B1C1E] hover:text-white transition-colors"
+                    >
+                      <i className="ti ti-file-type-pdf" style={{ fontSize: 18 }}></i>
+                      Exportar PDF
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowCalendarModal(true); setShowMenu(false); }}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#B8B8B8] hover:bg-[#1B1C1E] hover:text-white transition-colors"
+                    >
+                      <i className="ti ti-calendar-event" style={{ fontSize: 18 }}></i>
+                      Exportar calendario
+                    </button>
+                    <div className="border-t border-[#707070]/30" />
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/settings"); setShowMenu(false); }}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#B8B8B8] hover:bg-[#1B1C1E] hover:text-white transition-colors"
+                    >
+                      <i className="ti ti-settings" style={{ fontSize: 18 }}></i>
+                      Configuración
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/help"); setShowMenu(false); }}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#B8B8B8] hover:bg-[#1B1C1E] hover:text-white transition-colors"
+                    >
+                      <i className="ti ti-help-circle" style={{ fontSize: 18 }}></i>
+                      Ayuda
+                    </button>
+                    <div className="border-t border-[#707070]/30" />
+                    <form action="/auth/signout" method="POST">
+                      <button
+                        type="submit"
+                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-[#1B1C1E] transition-colors"
+                      >
+                        <i className="ti ti-logout" style={{ fontSize: 18 }}></i>
+                        Cerrar sesión
+                      </button>
+                    </form>
+                  </div>
+                </>
+              )}
             </div>
-            <button
-              type="button"
-              onClick={() => router.push("/settings")}
-              className="text-[#B8B8B8] hover:text-white transition-colors"
-              aria-label="Configuracion"
-              title="Ajustes"
-            >
-              <i className="ti ti-settings" style={{ fontSize: 20 }} aria-hidden="true"></i>
-            </button>
-            <form action="/auth/signout" method="POST">
-              <button
-                type="submit"
-                className="text-[#B8B8B8] hover:text-white transition-colors"
-                aria-label="Cerrar sesion"
-                title="Cerrar sesion"
-              >
-                <i className="ti ti-logout" style={{ fontSize: 20 }} aria-hidden="true"></i>
-              </button>
-            </form>
           </div>
         </div>
       </nav>
