@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { RunClubLogo } from "@/components/RunClubLogo";
 
 const ZONAS_PANAMA = ["Panama Ciudad","La Chorrera","Playas del Este","Penonome","Santiago","Chitre","Chiriqui","Colon","David"];
@@ -341,6 +342,12 @@ export default function SettingsClient({ userId, email, profile, subscription }:
 
         <Section title="Cuenta" description="Opciones de seguridad y acceso.">
           <div className="space-y-3">
+            <Link
+              href="/help"
+              className="flex w-full items-center gap-2 rounded-lg border border-[#707070] px-4 py-2.5 text-sm text-[#B8B8B8] hover:text-white hover:border-[#B8B8B8] transition-colors"
+            >
+              ❓ Centro de ayuda
+            </Link>
             <form action="/auth/signout" method="POST">
               <button type="submit" className="w-full rounded-lg border border-[#707070] px-4 py-2.5 text-sm text-[#B8B8B8] hover:text-white hover:border-[#B8B8B8] transition-colors text-left">
                 Cerrar sesion

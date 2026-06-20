@@ -16,6 +16,7 @@ export async function middleware(request: NextRequest) {
     "/generating",
     "/verify-email",
     "/terms",
+    "/help",
   ];
   if (publicPaths.some((p) => pathname.startsWith(p))) {
     console.log("[middleware] redirección: ninguna (ruta pública)");
