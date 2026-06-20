@@ -92,12 +92,17 @@ export default function HelpPage() {
   return (
     <main className="min-h-screen bg-[#1B1C1E] px-4 py-12">
       <div className="mx-auto max-w-2xl">
-        <div className="mb-10 text-center">
-          <RunClubLogo size="md" />
-          <h1 className="mt-6 text-2xl font-bold text-white">Centro de ayuda</h1>
-          <p className="mt-2 text-sm text-[#B8B8B8]">
-            Encuentra respuestas rápidas o contáctanos directamente.
-          </p>
+        <div className="mb-10">
+          <Link href="/dashboard" className="flex items-center gap-1.5 text-sm text-[#B8B8B8] hover:text-white transition-colors mb-8">
+            ← Volver al dashboard
+          </Link>
+          <div className="text-center">
+            <RunClubLogo size="md" />
+            <h1 className="mt-6 text-2xl font-bold text-white">Centro de ayuda</h1>
+            <p className="mt-2 text-sm text-[#B8B8B8]">
+              Encuentra respuestas rápidas o contáctanos directamente.
+            </p>
+          </div>
         </div>
 
         {/* WhatsApp CTA */}
