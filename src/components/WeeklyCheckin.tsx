@@ -47,6 +47,13 @@ export function WeeklyCheckin({ planId, weekNumber, track, pesoInicial }: Weekly
     load();
   }, [planId, weekNumber]);
 
+  const RECORDS_MUNDIALES: Record<string, { segundos: number; texto: string; atleta: string }> = {
+    "400m": { segundos: 43, texto: "0:43", atleta: "Wayde van Niekerk (2016)" },
+    "1K":   { segundos: 131, texto: "2:11", atleta: "Noah Ngeny (1999)" },
+    "3K":   { segundos: 440, texto: "7:20", atleta: "Daniel Komen (1996)" },
+    "5K":   { segundos: 755, texto: "12:35", atleta: "Joshua Cheptegei (2020)" },
+  };
+
   function validarTiempo(tiempo: string, distancia: string): string | null {
     const partes = tiempo.split(":");
     const horas = parseInt(partes[0] ?? "0") || 0;
@@ -56,18 +63,11 @@ export function WeeklyCheckin({ planId, weekNumber, track, pesoInicial }: Weekly
 
     if (totalSegundos === 0) return null;
 
-    const recordes: Record<string, number> = {
-      "400m": 43,
-      "1K": 131,
-      "3K": 440,
-      "5K": 755,
-    };
-
-    const record = recordes[distancia];
+    const record = RECORDS_MUNDIALES[distancia];
     if (!record) return null;
 
-    if (totalSegundos < record) {
-      return `⚡ Ese tiempo rompe el récord mundial de ${distancia}. Coach JJ te cree, pero revisa los números.`;
+    if (totalSegundos < record.segundos) {
+      return `⚡ Ese tiempo rompe el récord mundial de ${distancia} (${record.texto} — ${record.atleta}). Coach JJ te cree, pero revisa los números.`;
     }
     return null;
   }
