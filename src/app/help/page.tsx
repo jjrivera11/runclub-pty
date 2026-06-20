@@ -184,7 +184,7 @@ function ContactForm() {
           type="text"
           name="nombre"
           required
-          placeholder="Jose Rivera"
+          placeholder="Tu nombre completo"
           className="w-full rounded-lg border border-[#707070] bg-[#1B1C1E] px-3 py-2.5 text-sm text-white placeholder:text-[#707070] outline-none focus:border-[#F16823]"
         />
       </div>
