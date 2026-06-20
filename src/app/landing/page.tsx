@@ -72,8 +72,10 @@ function FadeInSection({ children, delay = 0 }: { children: React.ReactNode; del
 
 const BENEFITS = [
   { icon: "🤖", title: "Plan generado por IA", desc: "Coach JJ analiza tu nivel, objetivo y disponibilidad para crear un plan único para ti." },
-  { icon: "🗺️", title: "Rutas locales de Panamá", desc: "Sesiones diseñadas para la Cinta Costera, Parque Omar, Causeway y tu zona." },
+  { icon: "🗺️", title: "+56 rutas en todo Panamá", desc: "Desde la Cinta Costera hasta el Cerro Tute en Santa Fe. Coach JJ conoce tu ciudad." },
+  { icon: "🏔️", title: "Road y Trail", desc: "Entrena para carreras de asfalto o aventúrate al trail running. Coach JJ adapta tu plan al terreno." },
   { icon: "📈", title: "Adaptación continua", desc: "El plan evoluciona con tu rendimiento. Cada bloque mejora con tus datos reales." },
+  { icon: "🏁", title: "Carreras de práctica", desc: "Agrega carreras locales a tu plan. Coach JJ ajusta el tapering y la carga automáticamente." },
 ];
 
 const STEPS = [
@@ -234,7 +236,7 @@ export default function LandingPage() {
             No es una app genérica. Es un coach que conoce tus rutas.
           </p>
         </FadeInSection>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {BENEFITS.map((b, i) => (
             <FadeInSection key={i} delay={i * 0.15}>
               <motion.div

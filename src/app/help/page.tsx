@@ -50,6 +50,22 @@ const FAQ = [
         q: "¿Funciona fuera de Panamá?",
         a: "El plan de entrenamiento funciona en cualquier lugar del mundo. Las recomendaciones de rutas locales están optimizadas para Panamá, pero puedes sustituirlas por rutas de tu ciudad.",
       },
+      {
+        q: "¿Puedo entrenar para una carrera trail?",
+        a: "Sí. Al seleccionar tu carrera en el onboarding, indica si es trail. Coach JJ ajusta tu plan con sesiones de cuestas, desnivel, bajadas técnicas y tiempo en pie — muy diferente al road running.",
+      },
+      {
+        q: "¿Cómo agrego una carrera de práctica a mi plan?",
+        a: "En tu dashboard, en la sección 'Próximas carreras en Panamá', haz click en '+ Plan' en cualquier carrera. Coach JJ la incorpora al generar tu siguiente bloque, ajustando el tapering días antes y la recuperación después.",
+      },
+      {
+        q: "¿Cómo registro mis resultados reales de entrenamiento?",
+        a: "Al marcar una sesión como completada, aparece un modal opcional donde puedes ingresar la distancia real, duración real y nivel de esfuerzo del 1 al 5. Coach JJ usa estos datos para ajustar tu próximo bloque.",
+      },
+      {
+        q: "¿Dónde encuentro las rutas de entrenamiento?",
+        a: "Coach JJ menciona rutas específicas de tu ciudad en las notas de cada sesión. Tenemos más de 56 rutas verificadas en 12 ciudades de Panamá — desde Ciudad de Panamá hasta Bocas del Toro.",
+      },
     ],
   },
   {
