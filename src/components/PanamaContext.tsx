@@ -123,19 +123,20 @@ export function PanamaContext({ currentWeek, totalWeeks, track, raceDate, raceNa
         )}
         {upcomingRaces.length > 0 && (
           <div className="rounded-lg bg-[#1B1C1E] px-3 py-3">
-            <p className="text-xs font-medium text-[#F16823] mb-2">Proximas carreras en Panama</p>
+            <p className="text-xs font-medium text-[#F16823] mb-2">Próximas carreras en Panamá</p>
             <div className="space-y-2">
               {upcomingRaces.map((r) => {
                 const days = getDaysUntilRace(r.race_date);
+                const [year, month, day] = r.race_date.split("-").map(Number);
+                const fechaTexto = new Date(year, month - 1, day).toLocaleDateString("es-PA", { day: "numeric", month: "short" });
+                const countdown = days <= 7 ? "Esta semana" : days <= 14 ? "En 2 sem" : "En " + Math.ceil(days / 7) + " sem";
                 return (
                   <div key={r.id} className="flex items-center justify-between">
                     <div>
                       <p className="text-xs text-white">{r.name}</p>
-                      <p className="text-xs text-[#B8B8B8]">{r.distance_km}km - {r.location}</p>
+                      <p className="text-xs text-[#B8B8B8]">{fechaTexto} · {r.distance_km}km · {r.location}</p>
                     </div>
-                    <span className="text-xs text-[#B8B8B8] shrink-0 ml-2">
-                      {days <= 7 ? "Esta semana" : days <= 14 ? "En 2 semanas" : "En " + Math.ceil(days / 7) + " sem"}
-                    </span>
+                    <span className="text-xs text-[#B8B8B8] shrink-0 ml-2">{countdown}</span>
                   </div>
                 );
               })}
