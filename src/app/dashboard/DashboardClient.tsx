@@ -12,6 +12,7 @@ import { PartnerIncomingRequests } from "@/components/PartnerIncomingRequests";
 import { WeeklyCheckin } from "@/components/WeeklyCheckin";
 import { ProgressChart } from "@/components/ProgressChart";
 import { PanamaContext } from "@/components/PanamaContext";
+import { SessionCompleteModal } from "@/components/SessionCompleteModal";
 import { PlanCompletionScreen } from "@/components/PlanCompletionScreen";
 import { TrialBanner } from "@/components/TrialBanner";
 import { CalendarExportModal } from "@/components/CalendarExportModal";
@@ -583,6 +584,13 @@ export default function DashboardClient() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [showTrailPromo, setShowTrailPromo] = useState(false);
+  const [pendingSession, setPendingSession] = useState<{
+    weekNumber: number;
+    dayName: string;
+    title: string;
+    distanceKm?: number;
+    durationMin?: number;
+  } | null>(null);
   const [showMenu, setShowMenu] = useState(false);
 
   const {
@@ -693,7 +701,23 @@ export default function DashboardClient() {
   }, [currentWeek, semanasGeneradas, plan, totalWeeks, reload]);
 
   async function handleToggleDay(weekNumber: number, dayName: string) {
-    await toggleDay(weekNumber, dayName);
+    const week = plan?.plan_json.semanas.find((w) => w.numero === weekNumber);
+    const day = week?.dias.find((d) => d.dia === dayName);
+    const isCurrentlyCompleted = progress.some(
+      (p) => p.week_number === weekNumber && p.day_name === dayName && p.completed
+    );
+
+    if (!isCurrentlyCompleted && day) {
+      setPendingSession({
+        weekNumber,
+        dayName,
+        title: day.titulo,
+        distanceKm: day.distancia_km,
+        durationMin: day.duracion_min,
+      });
+    } else {
+      await toggleDay(weekNumber, dayName);
+    }
   }
 
   if (loading) {
@@ -943,6 +967,24 @@ export default function DashboardClient() {
         <CalendarExportModal
           onClose={() => setShowCalendarModal(false)}
           onDownload={() => handleExportCalendar(plan)}
+        />
+      )}
+
+      {pendingSession && (
+        <SessionCompleteModal
+          weekNumber={pendingSession.weekNumber}
+          dayName={pendingSession.dayName}
+          sessionTitle={pendingSession.title}
+          plannedDistanceKm={pendingSession.distanceKm}
+          plannedDurationMin={pendingSession.durationMin}
+          onSave={async (data) => {
+            await toggleDay(pendingSession.weekNumber, pendingSession.dayName, data);
+            setPendingSession(null);
+          }}
+          onSkip={async () => {
+            await toggleDay(pendingSession.weekNumber, pendingSession.dayName);
+            setPendingSession(null);
+          }}
         />
       )}
 

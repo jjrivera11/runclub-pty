@@ -23,6 +23,7 @@ interface PanamaContextProps {
   track: string;
   raceDate?: string | null;
   raceName?: string | null;
+  userId?: string;
 }
 
 function getWeekContext(currentWeek: number, totalWeeks: number, track: string): string {
@@ -55,6 +56,8 @@ function getDaysUntilRace(raceDate: string): number {
 export function PanamaContext({ currentWeek, totalWeeks, track, raceDate, raceName }: PanamaContextProps) {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [upcomingRaces, setUpcomingRaces] = useState<Race[]>([]);
+  const [addedRaces, setAddedRaces] = useState<Set<string>>(new Set());
+  const [addingRace, setAddingRace] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -83,6 +86,20 @@ export function PanamaContext({ currentWeek, totalWeeks, track, raceDate, raceNa
     }
     load();
   }, []);
+
+  async function handleAddRaceGoal(raceId: string) {
+    setAddingRace(raceId);
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setAddingRace(null); return; }
+    await supabase.from("race_goals").upsert({
+      user_id: user.id,
+      race_id: raceId,
+      is_target: false,
+    }, { onConflict: "user_id,race_id" });
+    setAddedRaces((prev) => new Set([...prev, raceId]));
+    setAddingRace(null);
+  }
 
   if (loading) return null;
 
@@ -132,15 +149,29 @@ export function PanamaContext({ currentWeek, totalWeeks, track, raceDate, raceNa
                 const fechaTexto = new Date(year, month - 1, day).toLocaleDateString("es-PA", { day: "numeric", month: "short" });
                 const countdown = days <= 7 ? "Esta semana" : days <= 14 ? "En 2 sem" : "En " + Math.ceil(days / 7) + " sem";
                 return (
-                  <div key={r.id} className="flex items-center justify-between">
-                    <div>
+                  <div key={r.id} className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
                       <p className="text-xs text-white flex items-center gap-1">
                         {r.name}
                         {r.is_trail && <span className="text-green-400 text-xs">🏔️</span>}
                       </p>
                       <p className="text-xs text-[#B8B8B8]">{fechaTexto} · {r.distance_km}km · {r.location}</p>
                     </div>
-                    <span className="text-xs text-[#B8B8B8] shrink-0 ml-2">{countdown}</span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-xs text-[#B8B8B8]">{countdown}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleAddRaceGoal(r.id)}
+                        disabled={addingRace === r.id || addedRaces.has(r.id)}
+                        className={`rounded-full px-2 py-0.5 text-xs transition-colors ${
+                          addedRaces.has(r.id)
+                            ? "bg-green-500/20 text-green-400"
+                            : "bg-[#F16823]/10 text-[#F16823] hover:bg-[#F16823]/20"
+                        } disabled:opacity-50`}
+                      >
+                        {addedRaces.has(r.id) ? "✓ Agregada" : addingRace === r.id ? "..." : "+ Meta"}
+                      </button>
+                    </div>
                   </div>
                 );
               })}

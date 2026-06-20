@@ -133,7 +133,7 @@ export function usePlan() {
   }, [plan, progress]);
 
   const toggleDay = useCallback(
-    async (weekNumber: number, dayName: string) => {
+    async (weekNumber: number, dayName: string, sessionData?: { actualDistanceKm?: number; actualDurationMin?: number; effortLevel?: number }) => {
       if (!plan) return;
 
       const existing = progress.find(
@@ -177,6 +177,11 @@ export function usePlan() {
             day_name: dayName,
             completed: newCompleted,
             logged_at: newCompleted ? new Date().toISOString() : null,
+            ...(newCompleted && sessionData ? {
+              actual_distance_km: sessionData.actualDistanceKm ?? null,
+              actual_duration_min: sessionData.actualDurationMin ?? null,
+              effort_level: sessionData.effortLevel ?? null,
+            } : {}),
           },
           { onConflict: "plan_id,week_number,day_name" }
         )

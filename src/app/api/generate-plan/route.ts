@@ -266,6 +266,19 @@ export async function POST(request: Request) {
           ).join("\n")
         : "";
 
+      const { data: raceGoals } = await supabase
+        .from("race_goals")
+        .select("races(name, race_date, distance_km, is_trail)")
+        .eq("user_id", user.id)
+        .eq("is_target", false);
+
+      const raceGoalsContext = raceGoals && raceGoals.length > 0
+        ? "\n\nCARRERAS DE PRÁCTICA DEL ATLETA:\n" +
+          raceGoals.map((g: { races: { name: string; race_date: string; distance_km: number; is_trail: boolean } | null }) =>
+            g.races ? `- ${g.races.name} el ${g.races.race_date} (${g.races.distance_km}km${g.races.is_trail ? " TRAIL" : ""}) — planifica un mini-tapering de 2-3 días antes y recuperación de 2-3 días después.` : ""
+          ).filter(Boolean).join("\n")
+        : "";
+
     const isRunner = onboarding.track === "runner";
     const isTrail = !!(onboarding as OnboardingAnswersRow & { is_trail?: boolean }).is_trail;
     const system = isTrail ? TRAIL_SYSTEM_PROMPT : (isRunner ? RUNNER_SYSTEM_PROMPT : TRANSFORMACION_SYSTEM_PROMPT);
@@ -322,8 +335,8 @@ export async function POST(request: Request) {
         : null;
 
       const userMessage = isRunner
-        ? buildRunnerBlockMessage(onboarding, blockStart, blockEnd, totalWeeks, performanceNote, spotsContext, isTrail)
-        : buildTransformacionBlockMessage(onboarding, blockStart, blockEnd, totalWeeks, performanceNote, spotsContext);
+        ? buildRunnerBlockMessage(onboarding, blockStart, blockEnd, totalWeeks, performanceNote, spotsContext + raceGoalsContext, isTrail)
+        : buildTransformacionBlockMessage(onboarding, blockStart, blockEnd, totalWeeks, performanceNote, spotsContext + raceGoalsContext);
 
       if (coachNote) {
         await supabase
@@ -370,8 +383,8 @@ export async function POST(request: Request) {
     const blockEnd = Math.min(BLOCK_SIZE, totalWeeks);
 
     const userMessage = isRunner
-      ? buildRunnerBlockMessage(onboarding, 1, blockEnd, totalWeeks, null, spotsContext, isTrail)
-      : buildTransformacionBlockMessage(onboarding, 1, blockEnd, totalWeeks, null, spotsContext);
+      ? buildRunnerBlockMessage(onboarding, 1, blockEnd, totalWeeks, null, spotsContext + raceGoalsContext, isTrail)
+      : buildTransformacionBlockMessage(onboarding, 1, blockEnd, totalWeeks, null, spotsContext + raceGoalsContext);
 
     const planJson = await fetchBlockFromClaude(system, userMessage);
 
