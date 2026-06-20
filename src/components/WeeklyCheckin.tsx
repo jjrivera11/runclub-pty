@@ -88,7 +88,7 @@ export function WeeklyCheckin({ planId, weekNumber, track, pesoInicial }: Weekly
         )}
         <p className="text-xs text-[#B8B8B8]/60">Coach JJ usa estos datos para ajustar tu próximo bloque.</p>
         <button onClick={() => { setSaved(false); setExisting(null); }} className="text-xs text-[#F16823] hover:opacity-80 transition-opacity">
-          Editar
+          Actualizar mi marca
         </button>
       </div>
     );
