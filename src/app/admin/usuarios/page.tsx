@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { adminFetch } from "@/lib/admin-api";
 
 interface UserRow {
@@ -48,20 +47,12 @@ export default function UsuariosPage() {
   }
 
   async function regeneratePlan(id: string) {
-    if (!confirm("¿Regenerar el plan de este usuario? Se borrará el plan actual y se generará uno nuevo.")) return;
+    if (!confirm("¿Resetear el plan? El usuario será enviado al onboarding para elegir un nuevo objetivo.")) return;
     setProcessing(id + "_plan");
-    const supabase = createClient();
-
-    // Desactivar plan actual
-    await supabase
-      .from("training_plans")
-      .update({ is_active: false })
-      .eq("user_id", id)
-      .eq("is_active", true);
-
-    // Llamar al generate-plan como si fuera el usuario
-    // El admin genera el plan manualmente via SQL — mostrar instrucción
-    alert("Plan anterior desactivado. El usuario debe ir a /generating para generar su nuevo plan, o puedes generarlo desde Supabase.");
+    await adminFetch("/usuarios", {
+      method: "DELETE",
+      body: JSON.stringify({ id }),
+    });
     setProcessing(null);
     load();
   }

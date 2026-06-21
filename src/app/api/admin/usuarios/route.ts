@@ -16,3 +16,21 @@ export async function PATCH(request: Request) {
   await supabase.from("profiles").update(updates).eq("id", id);
   return NextResponse.json({ success: true });
 }
+
+export async function DELETE(request: Request) {
+  const supabase = createServiceClient();
+  const { id } = await request.json();
+
+  await supabase
+    .from("training_plans")
+    .update({ is_active: false })
+    .eq("user_id", id)
+    .eq("is_active", true);
+
+  await supabase
+    .from("onboarding_answers")
+    .delete()
+    .eq("user_id", id);
+
+  return NextResponse.json({ success: true });
+}
