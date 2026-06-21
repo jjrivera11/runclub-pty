@@ -140,7 +140,10 @@ function getSessionDate(
 async function handleDownloadPDF() {
   try {
     const response = await fetch("/api/export-pdf");
-    if (!response.ok) throw new Error("Error generando PDF");
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.detail ?? "Error del servidor");
+    }
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -148,8 +151,8 @@ async function handleDownloadPDF() {
     link.download = `plan-runclub-${new Date().toISOString().split("T")[0]}.pdf`;
     link.click();
     URL.revokeObjectURL(url);
-  } catch {
-    alert("No se pudo generar el PDF. Intenta de nuevo.");
+  } catch (e) {
+    alert("No se pudo generar el PDF: " + (e instanceof Error ? e.message : String(e)));
   }
 }
 

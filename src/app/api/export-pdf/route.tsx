@@ -374,7 +374,8 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("export-pdf error:", error);
-    return NextResponse.json({ error: "No se pudo generar el PDF." }, { status: 500 });
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("export-pdf error:", msg);
+    return NextResponse.json({ error: "No se pudo generar el PDF.", detail: msg }, { status: 500 });
   }
 }
