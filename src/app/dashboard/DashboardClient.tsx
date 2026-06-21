@@ -470,11 +470,28 @@ function DayRow({
       {expanded && (
         <div className="border-t border-[#707070]/30 px-4 pb-4 pt-2">
           <p className="text-sm text-white">{day.descripcion}</p>
-          {day.notas_locales && (
-            <p className="mt-2 text-sm italic text-[#B8B8B8]">
-              {day.notas_locales}
-            </p>
-          )}
+          {day.notas_locales && (() => {
+            const parts = day.notas_locales.split("|");
+            const lugar = parts[0]?.trim() ?? day.notas_locales;
+            const terreno = parts[1]?.trim() ?? null;
+            return (
+              <div className="mt-3 flex items-start gap-2 rounded-lg bg-[#F16823]/10 border border-[#F16823]/20 px-3 py-2">
+                <span className="text-sm">📍</span>
+                <div>
+                  <p className="text-xs text-[#B8B8B8]">
+                    <span className="font-semibold text-[#F16823]">Lugar sugerido: </span>
+                    {lugar}.
+                  </p>
+                  {terreno && (
+                    <p className="text-xs text-[#B8B8B8] mt-0.5">
+                      <span className="font-semibold text-[#B8B8B8]">Terreno: </span>
+                      {terreno}
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
     </div>
