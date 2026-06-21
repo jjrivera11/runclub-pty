@@ -72,7 +72,7 @@ export async function middleware(request: NextRequest) {
 
   // Soft block: si trial expiró y no es premium → redirect a /pricing
   // Excluir /pricing y /payment para no crear loop
-  if (!pathname.startsWith("/pricing") && !pathname.startsWith("/payment")) {
+  if (!pathname.startsWith("/pricing") && !pathname.startsWith("/payment") && !pathname.startsWith("/admin")) {
     if (!profile?.is_premium) {
       const trialEnd = profile?.trial_ends_at ? new Date(profile.trial_ends_at) : null;
       const trialExpired = !trialEnd || trialEnd < new Date();
