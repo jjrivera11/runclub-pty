@@ -60,11 +60,28 @@ export async function middleware(request: NextRequest) {
     .eq("id", user.id)
     .single();
 
-  console.log("[middleware] profile:", profile);
+  // Si RLS bloquea, intentar con service role
+  let finalProfile = profile;
+  if (!finalProfile) {
+    const serviceUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    if (serviceKey) {
+      const res = await fetch(`${serviceUrl}/rest/v1/profiles?id=eq.${user.id}&select=is_premium,is_admin,trial_ends_at`, {
+        headers: {
+          "apikey": serviceKey,
+          "Authorization": `Bearer ${serviceKey}`,
+        },
+      });
+      const data = await res.json();
+      finalProfile = data?.[0] ?? null;
+    }
+  }
+
+  console.log("[middleware] profile:", finalProfile);
 
   // Ruta /admin → verificar is_admin
   if (pathname.startsWith("/admin")) {
-    if (!profile?.is_admin) {
+    if (!finalProfile?.is_admin) {
       console.log("[middleware] redirección: /dashboard (sin is_admin)");
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
@@ -73,8 +90,8 @@ export async function middleware(request: NextRequest) {
   // Soft block: si trial expiró y no es premium → redirect a /pricing
   // Excluir /pricing y /payment para no crear loop
   if (!pathname.startsWith("/pricing") && !pathname.startsWith("/payment") && !pathname.startsWith("/admin")) {
-    if (!profile?.is_premium) {
-      const trialEnd = profile?.trial_ends_at ? new Date(profile.trial_ends_at) : null;
+    if (!finalProfile?.is_premium) {
+      const trialEnd = finalProfile?.trial_ends_at ? new Date(finalProfile.trial_ends_at) : null;
       const trialExpired = !trialEnd || trialEnd < new Date();
       if (trialExpired) {
         console.log("[middleware] redirección: /pricing (trial expirado)");
