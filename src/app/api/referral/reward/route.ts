@@ -3,8 +3,20 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
+  const cronSecret = process.env.CRON_SECRET;
+  const authHeader = request.headers.get("authorization");
+  const provided = authHeader?.replace("Bearer ", "") ?? "";
+  if (!cronSecret || provided !== cronSecret) {
+    return NextResponse.json({ error: "No autorizado." }, { status: 401 });
+  }
+
   const { paid_user_id } = await request.json();
   if (!paid_user_id) return NextResponse.json({ error: "paid_user_id requerido." }, { status: 400 });
+
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_REGEX.test(paid_user_id)) {
+    return NextResponse.json({ error: "paid_user_id inválido." }, { status: 400 });
+  }
 
   const cookieStore = await cookies();
   const supabase = createServerClient(

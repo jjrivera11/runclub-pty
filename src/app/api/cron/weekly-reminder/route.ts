@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
   const { data: plans } = await supabase
     .from("training_plans")
-    .select("id, user_id, total_weeks, plan_json, generated_at, profiles(full_name), subscriptions(status)")
+    .select("id, user_id, total_weeks, generated_at, profiles(full_name)")
     .eq("is_active", true);
 
   if (!plans) return NextResponse.json({ sent: 0 });
@@ -29,8 +29,13 @@ export async function GET(request: Request) {
       const diffDays = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
       const weekNumber = Math.min(Math.floor(diffDays / 7) + 1, plan.total_weeks);
 
-      const semanas = plan.plan_json?.semanas ?? [];
-      const currentWeekData = semanas.find((s: { numero: number }) => s.numero === weekNumber);
+      const { data: planData } = await supabase
+        .from("training_plans")
+        .select("plan_json->semanas")
+        .eq("id", plan.id)
+        .single();
+      const semanas = (planData?.semanas as { numero: number; dias: unknown[] }[]) ?? [];
+      const currentWeekData = semanas.find((s) => s.numero === weekNumber);
       const sessions = currentWeekData?.dias?.length ?? 0;
 
       if (sessions === 0) continue;

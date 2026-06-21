@@ -7,6 +7,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Parametros requeridos." }, { status: 400 });
   }
 
+  const ALLOWED_ACTIONS = ["accepted", "rejected", "pending"] as const;
+  type PartnerAction = typeof ALLOWED_ACTIONS[number];
+  if (!ALLOWED_ACTIONS.includes(action as PartnerAction)) {
+    return NextResponse.json({ error: "Acción inválida." }, { status: 400 });
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "No autorizado." }, { status: 401 });
