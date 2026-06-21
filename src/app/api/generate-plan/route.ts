@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { logError } from "@/lib/logger";
 import { sendPlanReadyEmail, sendNewBlockEmail } from "@/lib/email";
 import type { OnboardingData } from "@/types/onboarding";
 import type { PlanJson } from "@/types/plan";
@@ -224,13 +225,15 @@ async function fetchBlockFromClaude(system: string, userMessage: string): Promis
 }
 
 export async function POST(request: Request) {
+  let isNextBlock = false;
+  let supabase: Awaited<ReturnType<typeof createClient>> | undefined;
   try {
-    const supabase = await createClient();
+    supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
     const body = await request.json().catch(() => ({}));
-    const isNextBlock = body?.next_block === true;
+    isNextBlock = body?.next_block === true;
     const existingPlanId = body?.plan_id;
 
     const { data: answers, error: answersError } = await supabase
@@ -439,6 +442,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, plan_id: newPlan.id, semanas_generadas: blockEnd, total_weeks: totalWeeks });
 
   } catch (error) {
+    const { data: { user: errUser } } = await supabase?.auth.getUser().catch(() => ({ data: { user: null } }))
+      ?? { data: { user: null } };
+    await logError({
+      userId: errUser?.id,
+      route: "/api/generate-plan",
+      error,
+      context: { is_next_block: isNextBlock },
+    });
     console.error("generate-plan error:", error);
     return NextResponse.json({ error: "No se pudo generar tu plan. Intenta de nuevo." }, { status: 500 });
   }

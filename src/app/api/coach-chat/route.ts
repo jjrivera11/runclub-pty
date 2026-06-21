@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { logError } from "@/lib/logger";
 
 const SYSTEM_PROMPT = `Eres Coach JJ, el entrenador de running de RunClub Panamá. Eres motivador, directo y conoces Panamá perfectamente.
 
@@ -104,6 +105,11 @@ export async function POST(request: Request) {
   });
 
   if (!response.ok) {
+    await logError({
+      route: "/api/coach-chat",
+      error: `Anthropic error: ${response.status}`,
+      context: { ip },
+    });
     return NextResponse.json({ error: "Error al contactar la IA." }, { status: 502 });
   }
 

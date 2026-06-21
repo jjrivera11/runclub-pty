@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { logError } from "@/lib/logger";
 import { renderToBuffer, Document, Page, Text, View, StyleSheet, Svg, Path } from "@react-pdf/renderer";
 import type { TrainingPlan, PlanWeek, PlanDay } from "@/types/plan";
 
@@ -373,6 +374,10 @@ export async function GET() {
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
+    await logError({
+      route: "/api/export-pdf",
+      error,
+    });
     console.error("export-pdf error:", msg);
     return NextResponse.json({ error: "No se pudo generar el PDF.", detail: msg }, { status: 500 });
   }
