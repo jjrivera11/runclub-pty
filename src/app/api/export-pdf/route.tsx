@@ -367,7 +367,7 @@ export async function GET() {
       />
     );
 
-    return new NextResponse(pdfStream, {
+    return new NextResponse(pdfStream.buffer as ArrayBuffer, {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="plan-runclub-${new Date().toISOString().split("T")[0]}.pdf"`,
