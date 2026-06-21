@@ -10,7 +10,22 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      return NextResponse.redirect(`${origin}/dashboard`);
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data: plan } = await supabase
+          .from("training_plans")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("is_active", true)
+          .maybeSingle();
+
+        if (plan) {
+          return NextResponse.redirect(`${origin}/dashboard`);
+        } else {
+          return NextResponse.redirect(`${origin}/onboarding`);
+        }
+      }
     }
   }
 
