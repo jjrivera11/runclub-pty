@@ -60,9 +60,12 @@ function GeneratingPageInner() {
         router.push("/dashboard");
       }, 800);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "No se pudo generar tu plan. Intenta de nuevo."
-      );
+      const msg = err instanceof Error ? err.message : "No se pudo generar tu plan. Intenta de nuevo.";
+      if (msg.includes("onboarding")) {
+        router.push("/onboarding");
+        return;
+      }
+      setError(msg);
       setRetrying(false);
     }
   }, [router]);
