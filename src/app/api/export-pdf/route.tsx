@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import ReactPDF, { Document, Page, Text, View, StyleSheet, Svg, Path } from "@react-pdf/renderer";
+import { renderToBuffer, Document, Page, Text, View, StyleSheet, Svg, Path } from "@react-pdf/renderer";
 import type { TrainingPlan, PlanWeek, PlanDay } from "@/types/plan";
 
 const ORANGE = "#F16823";
@@ -359,7 +359,7 @@ export async function GET() {
     const activePlan = plan as TrainingPlan;
     const semanasGeneradas = activePlan.semanas_generadas ?? activePlan.plan_json.semanas.length;
 
-    const pdfStream = await ReactPDF.renderToBuffer(
+    const pdfStream = await renderToBuffer(
       <PlanDocument
         plan={activePlan}
         userName={profile?.full_name ?? "Atleta"}
