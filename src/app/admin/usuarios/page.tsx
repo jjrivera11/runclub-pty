@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { adminFetch } from "@/lib/admin-api";
 
 interface UserRow {
   id: string;
@@ -18,12 +19,8 @@ export default function UsuariosPage() {
   const [processing, setProcessing] = useState<string | null>(null);
 
   async function load() {
-    const supabase = createClient();
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, full_name, track, is_premium, subscription_status, is_admin")
-      .order("full_name");
-    setUsers((data as UserRow[]) ?? []);
+    const data = await adminFetch("/usuarios");
+    setUsers(data);
     setLoading(false);
   }
 
@@ -31,17 +28,21 @@ export default function UsuariosPage() {
 
   async function togglePremium(id: string, current: boolean) {
     setProcessing(id + "_premium");
-    const supabase = createClient();
-    await supabase.from("profiles").update({ is_premium: !current }).eq("id", id);
+    await adminFetch("/usuarios", {
+      method: "PATCH",
+      body: JSON.stringify({ id, is_premium: !current }),
+    });
     setProcessing(null);
     load();
   }
 
   async function changeTrack(id: string, newTrack: string) {
-    if (!confirm(`¿Cambiar el plan a "${newTrack}"? El usuario deberá regenerar su plan manualmente.`)) return;
+    if (!confirm(`¿Cambiar el plan a "${newTrack}"?`)) return;
     setProcessing(id + "_track");
-    const supabase = createClient();
-    await supabase.from("profiles").update({ track: newTrack }).eq("id", id);
+    await adminFetch("/usuarios", {
+      method: "PATCH",
+      body: JSON.stringify({ id, track: newTrack }),
+    });
     setProcessing(null);
     load();
   }

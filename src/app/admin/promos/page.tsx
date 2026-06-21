@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { adminFetch } from "@/lib/admin-api";
 
 interface PromoCode {
   id: string;
@@ -28,12 +29,8 @@ export default function PromosPage() {
   const [error, setError] = useState<string | null>(null);
 
   async function load() {
-    const supabase = createClient();
-    const { data } = await supabase
-      .from("promo_codes")
-      .select("*")
-      .order("created_at", { ascending: false });
-    setPromos((data as PromoCode[]) ?? []);
+    const data = await adminFetch("/promos");
+    setPromos(data);
     setLoading(false);
   }
 
@@ -43,7 +40,6 @@ export default function PromosPage() {
     setError(null);
     if (!form.code || !form.value) { setError("Codigo y valor son obligatorios."); return; }
     setSaving(true);
-    const supabase = createClient();
     const payload: Record<string, unknown> = {
       code: form.code.toUpperCase().trim(),
       type: form.type,
@@ -53,16 +49,26 @@ export default function PromosPage() {
       expires_at: form.expires_at || null,
       is_active: true,
     };
-    const { error: err } = await supabase.from("promo_codes").insert(payload);
-    if (err) { setError(err.message); setSaving(false); return; }
+    try {
+      await adminFetch("/promos", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al crear codigo.");
+      setSaving(false);
+      return;
+    }
     setForm(EMPTY);
     setSaving(false);
     load();
   }
 
   async function toggleActive(id: string, current: boolean) {
-    const supabase = createClient();
-    await supabase.from("promo_codes").update({ is_active: !current }).eq("id", id);
+    await adminFetch("/promos", {
+      method: "PATCH",
+      body: JSON.stringify({ id, is_active: !current }),
+    });
     load();
   }
 

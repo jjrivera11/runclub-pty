@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { adminFetch } from "@/lib/admin-api";
 
 interface Banner {
   id: string;
@@ -25,9 +26,8 @@ export default function BannersPage() {
   });
 
   async function load() {
-    const supabase = createClient();
-    const { data } = await supabase.from("banners").select("*").order("created_at", { ascending: false });
-    setBanners((data as Banner[]) ?? []);
+    const data = await adminFetch("/banners");
+    setBanners(data);
     setLoading(false);
   }
 
@@ -51,10 +51,13 @@ export default function BannersPage() {
 
     const { data: urlData } = supabase.storage.from("banners").getPublicUrl(path);
 
-    await supabase.from("banners").insert({
-      ...form,
-      image_url: urlData.publicUrl,
-      is_active: true,
+    await adminFetch("/banners", {
+      method: "POST",
+      body: JSON.stringify({
+        ...form,
+        image_url: urlData.publicUrl,
+        is_active: true,
+      }),
     });
 
     setForm({ title: "", link_url: "", audience: "free", placement: "dashboard" });
@@ -64,18 +67,19 @@ export default function BannersPage() {
   }
 
   async function toggleActive(id: string, current: boolean) {
-    console.log("toggleActive called", id, current);
-    const supabase = createClient();
-    const { error } = await supabase.from("banners").update({ is_active: !current }).eq("id", id);
-    console.log("toggleActive result:", error);
+    await adminFetch("/banners", {
+      method: "PATCH",
+      body: JSON.stringify({ id, is_active: !current }),
+    });
     load();
   }
 
   async function deleteBanner(id: string, title: string) {
     if (!confirm(`¿Deseas eliminar el banner "${title}"? Esta acción no se puede deshacer.`)) return;
-    const supabase = createClient();
-    const { error } = await supabase.from("banners").delete().eq("id", id);
-    console.log("deleteBanner result:", error);
+    await adminFetch("/banners", {
+      method: "DELETE",
+      body: JSON.stringify({ id }),
+    });
     load();
   }
 

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { adminFetch } from "@/lib/admin-api";
 
 interface Race {
   id: string;
@@ -27,9 +27,8 @@ export default function CarrerasPage() {
   const [error, setError] = useState<string | null>(null);
 
   async function load() {
-    const supabase = createClient();
-    const { data } = await supabase.from("races").select("*").order("race_date");
-    setRaces((data as Race[]) ?? []);
+    const data = await adminFetch("/carreras");
+    setRaces(data);
     setLoading(false);
   }
 
@@ -42,13 +41,16 @@ export default function CarrerasPage() {
       return;
     }
     setSaving(true);
-    const supabase = createClient();
     if (editing) {
-      const { error } = await supabase.from("races").update(form).eq("id", editing);
-      console.log("update result:", error);
+      await adminFetch("/carreras", {
+        method: "PATCH",
+        body: JSON.stringify({ id: editing, ...form }),
+      });
     } else {
-      const { error } = await supabase.from("races").insert({ ...form, is_active: true });
-      console.log("insert result:", error);
+      await adminFetch("/carreras", {
+        method: "POST",
+        body: JSON.stringify({ ...form, is_active: true }),
+      });
     }
     setForm(EMPTY);
     setEditing(null);
@@ -57,8 +59,10 @@ export default function CarrerasPage() {
   }
 
   async function toggleActive(id: string, current: boolean) {
-    const supabase = createClient();
-    await supabase.from("races").update({ is_active: !current }).eq("id", id);
+    await adminFetch("/carreras", {
+      method: "PATCH",
+      body: JSON.stringify({ id, is_active: !current }),
+    });
     load();
   }
 

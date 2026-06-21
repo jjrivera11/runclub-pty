@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { adminFetch } from "@/lib/admin-api";
 
 interface Payment {
   id: string;
@@ -20,17 +20,8 @@ export default function PagosPage() {
   const [filter, setFilter] = useState<"all" | "pending_verification" | "paid" | "rejected">("pending_verification");
 
   async function load() {
-    const supabase = createClient();
-    let query = supabase
-      .from("payments")
-      .select("id, user_id, amount_usd, status, provider, plan, created_at, profiles(full_name, is_premium)")
-      .order("created_at", { ascending: false })
-      .limit(100);
-
-    if (filter !== "all") query = query.eq("status", filter);
-
-    const { data } = await query;
-    setPayments((data as unknown as Payment[]) ?? []);
+    const data = await adminFetch(`/pagos${filter !== "all" ? `?status=${filter}` : ""}`);
+    setPayments(data);
     setLoading(false);
   }
 
@@ -38,56 +29,26 @@ export default function PagosPage() {
 
   async function handleApprove(payment: Payment) {
     setProcessing(payment.id);
-    const supabase = createClient();
-
-    await supabase
-      .from("payments")
-      .update({ status: "paid" })
-      .eq("id", payment.id);
-
-    await supabase
-      .from("profiles")
-      .update({
-        is_premium: true,
-        subscription_status: "active",
-      })
-      .eq("id", payment.user_id);
-
-    await supabase.from("subscriptions").upsert({
-      user_id: payment.user_id,
-      status: "active",
-      provider: "bank_transfer",
-      amount_usd: payment.amount_usd,
-      plan: payment.plan,
-      current_period_start: new Date().toISOString(),
-      current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-    }, { onConflict: "user_id" });
-
-    // Aplicar descuento de referido al referidor
-    const { data: paidProfile } = await supabase
-      .from("profiles")
-      .select("referred_by")
-      .eq("id", payment.user_id)
-      .single();
-
-    if (paidProfile?.referred_by) {
-      await supabase
-        .from("profiles")
-        .update({ referral_discount_pct: 20, referral_discount_used: false })
-        .eq("id", paidProfile.referred_by);
-    }
-
+    await adminFetch("/pagos", {
+      method: "PATCH",
+      body: JSON.stringify({
+        id: payment.id,
+        status: "paid",
+        user_id: payment.user_id,
+        amount_usd: payment.amount_usd,
+        plan: payment.plan,
+      }),
+    });
     setProcessing(null);
     load();
   }
 
   async function handleReject(paymentId: string) {
     setProcessing(paymentId);
-    const supabase = createClient();
-    await supabase
-      .from("payments")
-      .update({ status: "rejected" })
-      .eq("id", paymentId);
+    await adminFetch("/pagos", {
+      method: "PATCH",
+      body: JSON.stringify({ id: paymentId, status: "rejected" }),
+    });
     setProcessing(null);
     load();
   }
