@@ -588,6 +588,7 @@ export default function DashboardClient() {
     weekNumber: number;
     dayName: string;
     title: string;
+    tipoSesion?: string;
     distanceKm?: number;
     durationMin?: number;
   } | null>(null);
@@ -712,6 +713,7 @@ export default function DashboardClient() {
         weekNumber,
         dayName,
         title: day.titulo,
+        tipoSesion: day.tipo_sesion,
         distanceKm: day.distancia_km ?? undefined,
         durationMin: day.duracion_min ?? undefined,
       });
@@ -975,6 +977,7 @@ export default function DashboardClient() {
           weekNumber={pendingSession.weekNumber}
           dayName={pendingSession.dayName}
           sessionTitle={pendingSession.title}
+          tipoSesion={pendingSession.tipoSesion}
           plannedDistanceKm={pendingSession.distanceKm}
           plannedDurationMin={pendingSession.durationMin}
           onSave={async (data) => {
