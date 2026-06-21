@@ -18,19 +18,72 @@ Reglas:
 - Nunca generes un plan completo de entrenamiento
 - Cuando el usuario muestre interés, invítalo a registrarse para ver su plan completo`;
 
+const RATE_LIMIT_MAP = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 20;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hora
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = RATE_LIMIT_MAP.get(ip);
+
+  if (!entry || now > entry.resetAt) {
+    RATE_LIMIT_MAP.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX) return false;
+
+  entry.count++;
+  return true;
+}
+
+const ALLOWED_ROLES = new Set(["user", "assistant"]);
+
+interface ChatMessage {
+  role: string;
+  content: string;
+}
+
+function validateMessages(messages: unknown): messages is ChatMessage[] {
+  if (!Array.isArray(messages) || messages.length === 0) return false;
+  if (messages.length > 20) return false;
+
+  for (const msg of messages) {
+    if (typeof msg !== "object" || msg === null) return false;
+    const m = msg as Record<string, unknown>;
+    if (!ALLOWED_ROLES.has(m.role as string)) return false;
+    if (typeof m.content !== "string") return false;
+    if ((m.content as string).length > 2000) return false;
+  }
+
+  return true;
+}
+
 export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: "API key no configurada." }, { status: 500 });
   }
 
-  let messages: { role: string; content: string }[];
+  // Rate limiting por IP
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    ?? request.headers.get("x-real-ip")
+    ?? "unknown";
+
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json(
+      { error: "Demasiadas solicitudes. Intenta de nuevo en una hora." },
+      { status: 429 }
+    );
+  }
+
+  let messages: ChatMessage[];
   try {
     const body = await request.json();
-    messages = body.messages;
-    if (!Array.isArray(messages) || messages.length === 0) {
+    if (!validateMessages(body.messages)) {
       return NextResponse.json({ error: "Mensajes inválidos." }, { status: 400 });
     }
+    messages = body.messages;
   } catch {
     return NextResponse.json({ error: "Payload inválido." }, { status: 400 });
   }
@@ -44,7 +97,7 @@ export async function POST(request: Request) {
     },
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
-      max_tokens: 1000,
+      max_tokens: 300,
       system: SYSTEM_PROMPT,
       messages,
     }),

@@ -25,7 +25,16 @@ export async function POST(request: Request) {
 
   if (!promo) return NextResponse.json({ error: "Codigo no encontrado." }, { status: 404 });
 
-  await supabase.from("promo_uses").insert({ user_id: user.id, promo_code_id: promo.id });
+  const { error: insertError } = await supabase
+    .from("promo_uses")
+    .insert({ user_id: user.id, promo_code_id: promo.id });
+
+  if (insertError) {
+    if (insertError.code === "23505") {
+      return NextResponse.json({ error: "Ya usaste este codigo." }, { status: 400 });
+    }
+    return NextResponse.json({ error: "Error al aplicar el codigo." }, { status: 500 });
+  }
   await supabase.from("promo_codes").update({ times_used: promo.times_used + 1 }).eq("id", promo.id);
 
   if (promo.type === "free_premium") {
