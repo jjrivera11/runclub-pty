@@ -137,9 +137,20 @@ function getSessionDate(
   return sessionDate;
 }
 
-function handleDownloadPDF() {
-  // TODO: reemplazar con jsPDF para PDF más completo
-  window.print();
+async function handleDownloadPDF() {
+  try {
+    const response = await fetch("/api/export-pdf");
+    if (!response.ok) throw new Error("Error generando PDF");
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `plan-runclub-${new Date().toISOString().split("T")[0]}.pdf`;
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch {
+    alert("No se pudo generar el PDF. Intenta de nuevo.");
+  }
 }
 
 function handleExportCalendar(plan: TrainingPlan) {
