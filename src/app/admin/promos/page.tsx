@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { adminFetch } from "@/lib/admin-api";
 
 interface PromoCode {
@@ -73,8 +72,11 @@ export default function PromosPage() {
   }
 
   async function deletePromo(id: string) {
-    const supabase = createClient();
-    await supabase.from("promo_codes").delete().eq("id", id);
+    if (!confirm("¿Eliminar este código? Esta acción no se puede deshacer.")) return;
+    await adminFetch("/promos", {
+      method: "DELETE",
+      body: JSON.stringify({ id }),
+    });
     load();
   }
 

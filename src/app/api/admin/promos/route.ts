@@ -23,3 +23,10 @@ export async function PATCH(request: Request) {
   await supabase.from("promo_codes").update(updates).eq("id", id);
   return NextResponse.json({ success: true });
 }
+
+export async function DELETE(request: Request) {
+  const supabase = createServiceClient();
+  const { id } = await request.json();
+  await supabase.from("promo_codes").delete().eq("id", id);
+  return NextResponse.json({ success: true });
+}
