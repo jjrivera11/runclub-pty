@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   },
   description: "Tu plan de entrenamiento personalizado con IA. Rutas locales de Panamá, adaptación continua y una comunidad que entrena contigo.",
   metadataBase: new URL("https://runclubpty.com"),
+  icons: {
+    icon: "/logo.svg",
+    shortcut: "/logo.svg",
+    apple: "/logo.svg",
+  },
   openGraph: {
     title: "RunClub Panamá — Entrena más inteligente con Coach JJ",
     description: "Tu plan de entrenamiento personalizado con IA. Rutas locales de Panamá, adaptación continua y una comunidad que entrena contigo.",
