@@ -19,8 +19,15 @@ export async function PATCH(request: Request) {
 
 export async function DELETE(request: Request) {
   const supabase = createServiceClient();
-  const { id } = await request.json();
+  const { id, hard_delete } = await request.json();
 
+  if (hard_delete) {
+    // Eliminar usuario completo de auth
+    await supabase.auth.admin.deleteUser(id);
+    return NextResponse.json({ success: true });
+  }
+
+  // Reset plan (comportamiento anterior)
   await supabase
     .from("training_plans")
     .update({ is_active: false })

@@ -57,6 +57,17 @@ export default function UsuariosPage() {
     load();
   }
 
+  async function deleteUser(id: string, name: string) {
+    if (!confirm(`¿Eliminar permanentemente a ${name}? Esta acción no se puede deshacer — el usuario perderá acceso y todos sus datos.`)) return;
+    setProcessing(id + "_delete");
+    await adminFetch("/usuarios", {
+      method: "DELETE",
+      body: JSON.stringify({ id, hard_delete: true }),
+    });
+    setProcessing(null);
+    load();
+  }
+
   const filtered = users.filter((u) =>
     u.full_name?.toLowerCase().includes(search.toLowerCase())
   );
@@ -123,6 +134,13 @@ export default function UsuariosPage() {
                         className="rounded-lg border border-[#707070] px-3 py-1 text-xs text-white hover:border-yellow-500 hover:text-yellow-400 transition-colors disabled:opacity-50"
                       >
                         {processing === u.id + "_plan" ? "..." : "↺ Reset plan"}
+                      </button>
+                      <button
+                        onClick={() => deleteUser(u.id, u.full_name ?? "este usuario")}
+                        disabled={processing === u.id + "_delete"}
+                        className="rounded-lg border border-red-500/30 px-3 py-1 text-xs text-red-400 hover:border-red-400 transition-colors disabled:opacity-50"
+                      >
+                        {processing === u.id + "_delete" ? "..." : "🗑 Eliminar"}
                       </button>
                     </div>
                   </td>
