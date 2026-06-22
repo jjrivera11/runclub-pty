@@ -1,14 +1,31 @@
+import { timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { sendWeeklyReminderEmail } from "@/lib/email";
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) {
+    return NextResponse.json({ error: "CRON_SECRET no configurado." }, { status: 500 });
   }
 
-  const supabase = await createClient();
+  const authHeader = request.headers.get("authorization");
+  const provided = authHeader?.replace("Bearer ", "") ?? "";
+
+  try {
+    const providedBuffer = Buffer.from(provided);
+    const expectedBuffer = Buffer.from(cronSecret);
+    if (
+      providedBuffer.length !== expectedBuffer.length ||
+      !timingSafeEqual(providedBuffer, expectedBuffer)
+    ) {
+      return NextResponse.json({ error: "No autorizado." }, { status: 401 });
+    }
+  } catch {
+    return NextResponse.json({ error: "No autorizado." }, { status: 401 });
+  }
+
+  const supabase = createServiceClient();
 
   const { data: plans } = await supabase
     .from("training_plans")

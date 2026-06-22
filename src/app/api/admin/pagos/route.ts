@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/adminAuth";
 
 export async function GET(request: Request) {
+  const auth = await requireAdmin();
+  if ("error" in auth) return auth.error;
   const supabase = createServiceClient();
   const { searchParams } = new URL(request.url);
   const status = searchParams.get("status");
@@ -19,8 +22,24 @@ export async function GET(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const auth = await requireAdmin();
+  if ("error" in auth) return auth.error;
+
   const supabase = createServiceClient();
-  const { id, status, user_id, amount_usd, plan } = await request.json();
+  const { id, status, amount_usd, plan } = await request.json();
+
+  // Obtener user_id del pago en BD — no confiar en el body
+  const { data: payment } = await supabase
+    .from("payments")
+    .select("user_id")
+    .eq("id", id)
+    .single();
+
+  if (!payment) {
+    return NextResponse.json({ error: "Pago no encontrado." }, { status: 404 });
+  }
+
+  const user_id = payment.user_id;
 
   await supabase.from("payments").update({ status }).eq("id", id);
 

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/adminAuth";
 
 export async function GET() {
+  const auth = await requireAdmin();
+  if ("error" in auth) return auth.error;
   const supabase = createServiceClient();
   const { data } = await supabase
     .from("profiles")
@@ -11,13 +14,28 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
+  const auth = await requireAdmin();
+  if ("error" in auth) return auth.error;
+
   const supabase = createServiceClient();
   const { id, ...updates } = await request.json();
-  await supabase.from("profiles").update(updates).eq("id", id);
+
+  const ALLOWED_FIELDS = new Set(["track", "is_premium", "subscription_status"]);
+  const safeUpdates = Object.fromEntries(
+    Object.entries(updates).filter(([key]) => ALLOWED_FIELDS.has(key))
+  );
+
+  if (Object.keys(safeUpdates).length === 0) {
+    return NextResponse.json({ error: "No hay campos válidos para actualizar." }, { status: 400 });
+  }
+
+  await supabase.from("profiles").update(safeUpdates).eq("id", id);
   return NextResponse.json({ success: true });
 }
 
 export async function DELETE(request: Request) {
+  const auth = await requireAdmin();
+  if ("error" in auth) return auth.error;
   const supabase = createServiceClient();
   const { id, hard_delete } = await request.json();
 
