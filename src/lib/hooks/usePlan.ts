@@ -17,25 +17,27 @@ function getCurrentWeekNumber(generatedAt: string, totalWeeks: number): number {
 }
 
 function calculateStreak(progress: DayProgress[]): number {
+  const TZ_OFFSET_MS = 5 * 60 * 60 * 1000; // UTC-5 Panama
+
   const completedDates = progress
     .filter((entry) => entry.completed && entry.logged_at)
     .map((entry) => {
-      const date = new Date(entry.logged_at!);
-      date.setHours(0, 0, 0, 0);
-      return date.getTime();
+      const utc = new Date(entry.logged_at!).getTime();
+      const local = new Date(utc - TZ_OFFSET_MS);
+      local.setUTCHours(0, 0, 0, 0);
+      return local.getTime();
     });
 
   const uniqueDates = new Set(completedDates);
   if (uniqueDates.size === 0) return 0;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const nowUtc = Date.now();
+  const todayLocal = new Date(nowUtc - TZ_OFFSET_MS);
+  todayLocal.setUTCHours(0, 0, 0, 0);
+  const today = todayLocal.getTime();
   const oneDayMs = 1000 * 60 * 60 * 24;
 
-  let checkDate = uniqueDates.has(today.getTime())
-    ? today.getTime()
-    : today.getTime() - oneDayMs;
-
+  let checkDate = uniqueDates.has(today) ? today : today - oneDayMs;
   if (!uniqueDates.has(checkDate)) return 0;
 
   let streak = 0;
@@ -43,7 +45,6 @@ function calculateStreak(progress: DayProgress[]): number {
     streak++;
     checkDate -= oneDayMs;
   }
-
   return streak;
 }
 
