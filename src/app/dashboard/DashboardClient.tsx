@@ -904,7 +904,18 @@ export default function DashboardClient() {
         />
 
         {showTrailPromo && (
-          <TrailPromoBanner onDismiss={() => setShowTrailPromo(false)} />
+          <TrailPromoBanner onDismiss={async () => {
+            setShowTrailPromo(false);
+            const { createClient } = await import("@/lib/supabase/client");
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+              await supabase
+                .from("profiles")
+                .update({ is_trail_promo_dismissed: true })
+                .eq("id", user.id);
+            }
+          }} />
         )}
 
         <PlanProgressBar
