@@ -46,7 +46,7 @@ export async function sendPlanReadyEmail(to: string, name: string, totalWeeks: n
 
     <!-- Logo -->
     <div style="text-align:center;margin-bottom:32px;">
-      <img src="https://runclubpty.com/logo.svg" alt="RunClub Panamá" style="height:48px;" />
+      <span style="color:#ffffff;font-weight:700;font-size:18px;letter-spacing:0.5px;">RunClub Panamá</span>
     </div>
 
     <!-- Hero -->
