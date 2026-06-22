@@ -103,7 +103,6 @@ export default function SettingsClient({ userId, email, profile, subscription }:
     const supabase = createClient();
     const { error: err } = await supabase.from("profiles").update({
       full_name: fullName,
-      partner_zona: partnerZona || null,
       partner_whatsapp: partnerWhatsapp || null,
       talla_zapatillas: tallaZapatillas || null,
       talla_camiseta: tallaCamiseta || null,
@@ -143,12 +142,13 @@ export default function SettingsClient({ userId, email, profile, subscription }:
 
   async function handleUpdateZona(zona: string) {
     setZonaEntrenamiento(zona);
+    setPartnerZona(zona);
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase
       .from("profiles")
-      .update({ zona_entrenamiento: zona })
+      .update({ zona_entrenamiento: zona, partner_zona: zona })
       .eq("id", user.id);
   }
 
@@ -245,14 +245,6 @@ export default function SettingsClient({ userId, email, profile, subscription }:
             <input type="email" value={email} disabled className="w-full rounded-lg border border-[#707070]/40 bg-[#1B1C1E] px-3 py-2.5 text-sm text-[#B8B8B8]/50 cursor-not-allowed" />
           </Field>
 
-          <Field label="Zona de entrenamiento" hint="Se usa para encontrar partners cerca de ti.">
-            <select value={partnerZona} onChange={(e) => setPartnerZona(e.target.value)}
-              className="w-full rounded-lg border border-[#707070] bg-[#1B1C1E] px-3 py-2.5 text-sm text-white outline-none focus:border-[#F16823]">
-              <option value="">Selecciona tu zona</option>
-              {ZONAS_PANAMA.map((z) => <option key={z} value={z}>{z}</option>)}
-            </select>
-          </Field>
-
           <Field label="WhatsApp" hint="Solo se comparte con partners que aceptes mutuamente.">
             <input type="tel" value={partnerWhatsapp} onChange={(e) => setPartnerWhatsapp(e.target.value)}
               placeholder="+507 6000-0000"
@@ -293,7 +285,7 @@ export default function SettingsClient({ userId, email, profile, subscription }:
           </button>
         </Section>
 
-        <Section title="Zona de entrenamiento" description="¿Dónde entrenas normalmente? Lo usamos para sugerirte rutas locales.">
+        <Section title="Zona de entrenamiento" description="¿Dónde entrenas normalmente? Lo usamos para sugerirte rutas locales y partners cerca de ti.">
           <div className="rounded-lg border border-[#707070]/40 bg-[#2a2b2d] px-4 py-3 mb-3">
             <p className="text-xs text-[#B8B8B8] leading-relaxed">
               ⚠️ Tu zona de entrenamiento se usará en tu <span className="text-white font-medium">próxima generación de plan</span>. Si ya tienes un plan activo, los lugares sugeridos actuales no cambiarán hasta que generes uno nuevo.
