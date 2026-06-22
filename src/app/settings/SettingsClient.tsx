@@ -36,7 +36,7 @@ function Section({ title, description, children }: { title: string; description?
   return (
     <div className="rounded-xl border border-[#707070]/40 bg-[#2a2b2d] p-5 space-y-4">
       <div>
-        <h2 className="text-sm font-semibold text-white">{title}</h2>
+        <h2 className="text-sm font-semibold text-white sm:text-base">{title}</h2>
         {description && <p className="text-xs text-[#B8B8B8] mt-0.5">{description}</p>}
       </div>
       {children}
