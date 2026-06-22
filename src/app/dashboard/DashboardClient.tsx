@@ -221,14 +221,15 @@ function LoadingSkeleton() {
   );
 }
 
-function StatsBar({
+function StatsCard({
   currentWeek,
   totalWeeks,
   weekCompleted,
   weekTotal,
   weekVolume,
   completionPercent,
-  isVerified,
+  streak,
+  progress,
 }: {
   currentWeek: number;
   totalWeeks: number;
@@ -236,81 +237,82 @@ function StatsBar({
   weekTotal: number;
   weekVolume: number;
   completionPercent: number;
-  isVerified?: boolean;
+  streak: number;
+  progress: DayProgress[];
 }) {
+  const DAYS = ["L", "M", "X", "J", "V", "S", "D"];
+  const dayNames = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+
+  const completedDayNames = new Set(
+    progress
+      .filter((p) => p.week_number === currentWeek && p.completed)
+      .map((p) => p.day_name)
+  );
+
   return (
-    <div className="grid grid-cols-2 gap-3">
-      <div className="rounded-lg bg-[#2a2b2d] p-4">
-        <p className="text-xs text-[#B8B8B8]">Semana actual</p>
-        {isVerified && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-[#F16823]/30 bg-[#F16823]/10 px-2 py-0.5 text-xs font-medium text-[#F16823]">
-            🏅 Verificado
-          </span>
-        )}
-        <p className="mt-1 text-xl font-semibold text-white">
-          {currentWeek}{" "}
-          <span className="text-sm font-normal text-[#B8B8B8]">
-            / {totalWeeks}
-          </span>
-        </p>
-      </div>
-      <div className="rounded-lg bg-[#2a2b2d] p-4">
-        <p className="text-xs text-[#B8B8B8]">Esta semana</p>
-        <p className="mt-1 text-xl font-semibold text-white">
-          {weekCompleted}{" "}
-          <span className="text-sm font-normal text-[#B8B8B8]">
-            / {weekTotal} días
-          </span>
-        </p>
-      </div>
-      <div className="rounded-lg bg-[#2a2b2d] p-4">
-        <p className="text-xs text-[#B8B8B8]">Volumen semanal</p>
-        <p className="mt-1 text-xl font-semibold text-white">
-          {weekVolume.toFixed(1)}{" "}
-          <span className="text-sm font-normal text-[#B8B8B8]">km</span>
-        </p>
-      </div>
-      <div className="rounded-lg bg-[#2a2b2d] p-4">
-        <p className="text-xs text-[#B8B8B8]">Consistencia</p>
-        <p className="mt-1 text-xl font-semibold text-white">
-          {completionPercent}%
-        </p>
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#1B1C1E]">
+    <div className="rounded-2xl border border-[#707070]/30 bg-[#2a2b2d] overflow-hidden">
+      {/* Progreso del plan */}
+      <div className="px-5 pt-5 pb-4 border-b border-[#707070]/20">
+        <div className="flex items-end justify-between mb-3">
+          <div>
+            <p className="text-xs text-[#707070] uppercase tracking-widest mb-1">Progreso del plan</p>
+            <p className="text-3xl font-bold text-white">{completionPercent}%</p>
+          </div>
+          <p className="text-sm text-[#B8B8B8] mb-1">
+            Semana <span className="text-white font-semibold">{currentWeek}</span> de {totalWeeks}
+          </p>
+        </div>
+        <div className="h-2 rounded-full bg-[#1B1C1E] overflow-hidden">
           <div
-            className="h-full rounded-full bg-[#F16823] transition-all duration-500"
+            className="h-full rounded-full bg-[#F16823] transition-all duration-700 ease-out"
             style={{ width: `${completionPercent}%` }}
           />
         </div>
       </div>
-    </div>
-  );
-}
 
-function PlanProgressBar({
-  completionPercent,
-  currentWeek,
-  totalWeeks,
-}: {
-  completionPercent: number;
-  currentWeek: number;
-  totalWeeks: number;
-}) {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-[#B8B8B8]">
-          Progreso del plan:{" "}
-          <span className="font-medium text-white">{completionPercent}%</span>
-        </span>
-        <span className="text-[#B8B8B8]">
-          Semana {currentWeek} de {totalWeeks}
-        </span>
+      {/* Métricas de la semana */}
+      <div className="grid grid-cols-3 divide-x divide-[#707070]/20 border-b border-[#707070]/20">
+        <div className="px-4 py-4 text-center">
+          <p className="text-xs text-[#707070] uppercase tracking-widest mb-1">Racha</p>
+          <p className="text-2xl font-bold text-white">{streak}</p>
+          <p className="text-xs text-[#B8B8B8]">{streak === 1 ? "día" : "días"}</p>
+        </div>
+        <div className="px-4 py-4 text-center">
+          <p className="text-xs text-[#707070] uppercase tracking-widest mb-1">Esta semana</p>
+          <p className="text-2xl font-bold text-white">{weekCompleted}<span className="text-sm font-normal text-[#B8B8B8]">/{weekTotal}</span></p>
+          <p className="text-xs text-[#B8B8B8]">sesiones</p>
+        </div>
+        <div className="px-4 py-4 text-center">
+          <p className="text-xs text-[#707070] uppercase tracking-widest mb-1">Volumen</p>
+          <p className="text-2xl font-bold text-white">{weekVolume.toFixed(1)}</p>
+          <p className="text-xs text-[#B8B8B8]">km esta semana</p>
+        </div>
       </div>
-      <div className="h-3 overflow-hidden rounded-full bg-[#2a2b2d]">
-        <div
-          className="h-full rounded-full bg-[#F16823] transition-all duration-500 ease-out"
-          style={{ width: `${completionPercent}%` }}
-        />
+
+      {/* Días de la semana */}
+      <div className="px-5 py-4">
+        <p className="text-xs text-[#707070] uppercase tracking-widest mb-3">Semana actual</p>
+        <div className="flex justify-between">
+          {DAYS.map((label, i) => {
+            const completed = completedDayNames.has(dayNames[i]) ||
+              completedDayNames.has(dayNames[i].normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+            return (
+              <div key={label} className="flex flex-col items-center gap-1.5">
+                <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+                  completed
+                    ? "bg-[#F16823] text-white"
+                    : "bg-[#1B1C1E] text-[#707070]"
+                }`}>
+                  {completed ? (
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : label}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -888,14 +890,15 @@ export default function DashboardClient() {
             )}
           </div>
         )}
-        <StatsBar
+        <StatsCard
           currentWeek={currentWeek}
           totalWeeks={totalWeeks}
           weekCompleted={currentWeekStats.completed}
           weekTotal={currentWeekStats.total}
           weekVolume={currentWeekStats.volume}
           completionPercent={completionPercent}
-          isVerified={isVerified}
+          streak={streak}
+          progress={progress}
         />
 
         {showTrailPromo && (
@@ -912,12 +915,6 @@ export default function DashboardClient() {
             }
           }} />
         )}
-
-        <PlanProgressBar
-          completionPercent={completionPercent}
-          currentWeek={currentWeek}
-          totalWeeks={totalWeeks}
-        />
 
         <BannerAd placement="dashboard" isPremium={isPremium} />
 
