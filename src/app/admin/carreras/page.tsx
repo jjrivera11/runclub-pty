@@ -17,9 +17,12 @@ interface Race {
 
 const COMMON_DISTANCES = [5, 10, 15, 21, 42];
 
-const EMPTY = {
+const EMPTY: {
+  name: string; distance_km: number; distances: number[]; race_date: string;
+  location: string; start_time: string; registration_url: string | null; is_trail: boolean;
+} = {
   name: "", distance_km: 0, distances: [] as number[], race_date: "",
-  location: "", start_time: "06:00", registration_url: "", is_trail: false,
+  location: "", start_time: "06:00", registration_url: null, is_trail: false,
 };
 
 export default function CarrerasPage() {
