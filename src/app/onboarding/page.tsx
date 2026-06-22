@@ -17,6 +17,7 @@ interface Race {
   name: string;
   race_date: string;
   distance_km?: number;
+  distances?: number[];
 }
 
 type ObjectiveOption = {
@@ -187,6 +188,7 @@ function OnboardingPageInner() {
   const [distancia, setDistancia] = useState<DistanciaCarrera | null>(null);
   const [nivel, setNivel] = useState<Nivel | null>(null);
   const [selectedRaceId, setSelectedRaceId] = useState<string | null>(null);
+  const [selectedRaceDistance, setSelectedRaceDistance] = useState<number | null>(null);
   const [customRaceName, setCustomRaceName] = useState("");
   const [customRaceDate, setCustomRaceDate] = useState("");
   const [customRaceDistancia, setCustomRaceDistancia] =
@@ -247,7 +249,7 @@ function OnboardingPageInner() {
       const supabase = createClient();
       const { data, error: fetchError } = await supabase
         .from("races")
-        .select("id, name, distance_km, race_date")
+        .select("id, name, distance_km, race_date, distances")
         .eq("is_active", true)
         .gte("race_date", new Date().toISOString().split("T")[0])
         .order("race_date", { ascending: true });
@@ -673,13 +675,35 @@ function OnboardingPageInner() {
               ) : (
                 <div className="space-y-3">
                   {races.map((race) => (
-                    <OptionCard
-                      key={race.id}
-                      label={race.name}
-                      description={formatRaceDate(race.race_date)}
-                      selected={selectedRaceId === race.id}
-                      onClick={() => setSelectedRaceId(race.id)}
-                    />
+                    <div key={race.id}>
+                      <OptionCard
+                        label={race.name}
+                        description={formatRaceDate(race.race_date)}
+                        selected={selectedRaceId === race.id}
+                        onClick={() => setSelectedRaceId(race.id)}
+                      />
+                      {selectedRaceId === race.id && race.distances && race.distances.length > 1 && (
+                        <div className="rounded-lg border border-[#F16823]/30 bg-[#2a2b2d] p-3 mt-1">
+                          <p className="text-xs text-[#B8B8B8] mb-2">¿En qué distancia correrás?</p>
+                          <div className="flex flex-wrap gap-2">
+                            {race.distances.map((d) => (
+                              <button
+                                key={d}
+                                type="button"
+                                onClick={() => { setSelectedRaceDistance(d); setDistancia(d <= 5 ? "5k" : d <= 10 ? "10k" : d <= 15 ? "15k" : d <= 21 ? "21k" : d <= 42 ? "42k" : "otro"); }}
+                                className={`rounded-full px-3 py-1 text-sm font-medium transition-colors border ${
+                                  selectedRaceDistance === d
+                                    ? "border-[#F16823] bg-[#F16823]/10 text-[#F16823]"
+                                    : "border-[#707070] text-[#B8B8B8]"
+                                }`}
+                              >
+                                {d}K
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   ))}
                   <OptionCard
                     label="✏️ Otra carrera"
