@@ -801,13 +801,6 @@ export default function DashboardClient() {
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
           <RunClubLogo size="sm" showText={false} />
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="white">
-                <path d="M12 23c-4.418 0-8-3.582-8-8 0-3.5 2-6.5 5-8-.5 1.5 0 3 1 4 .5-2 2-4.5 5-6-1 2.5-.5 5 1 6.5.5-1 .5-2 0-3 2 2 3 4.5 3 6.5 0 4.418-3.582 8-8 8z"/>
-              </svg>
-              <span className="text-sm font-semibold text-white">{streak}</span>
-              <span className="text-xs text-[#B8B8B8]">{streak === 1 ? "día" : "días"}</span>
-            </div>
             <div className="relative">
               <button
                 type="button"
