@@ -715,7 +715,13 @@ function OnboardingPageInner() {
                         label={race.name}
                         description={formatRaceDate(race.race_date)}
                         selected={selectedRaceId === race.id}
-                        onClick={() => setSelectedRaceId(race.id)}
+                        onClick={() => {
+                          setSelectedRaceId(race.id);
+                          if (race.distances && race.distances.length === 1) {
+                            const d = race.distances[0];
+                            setDistancia(d <= 5 ? "5k" : d <= 10 ? "10k" : d <= 15 ? "15k" : d <= 21 ? "21k" : d <= 42 ? "42k" : "otro");
+                          }
+                        }}
                       />
                       {selectedRaceId === race.id && race.distances && race.distances.length > 1 && (
                         <div className="rounded-lg border border-[#F16823]/30 bg-[#2a2b2d] p-3 mt-1">
