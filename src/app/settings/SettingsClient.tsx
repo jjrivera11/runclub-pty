@@ -23,6 +23,7 @@ interface Props {
     talla_camiseta?: string;
     is_verified?: boolean;
     zona_entrenamiento?: string;
+    track?: string;
   } | null;
   subscription: {
     status: string;
@@ -286,74 +287,67 @@ export default function SettingsClient({ userId, email, profile, subscription }:
         </Section>
 
         <Section title="Zona de entrenamiento" description="¿Dónde entrenas normalmente? Lo usamos para sugerirte rutas locales y partners cerca de ti.">
-          <div className="rounded-lg border border-[#707070]/40 bg-[#2a2b2d] px-4 py-3 mb-3">
+          <div className="rounded-lg border border-[#707070]/40 bg-[#1B1C1E] px-4 py-3 mb-3">
             <p className="text-xs text-[#B8B8B8] leading-relaxed">
-              ⚠️ Tu zona de entrenamiento se usará en tu <span className="text-white font-medium">próxima generación de plan</span>. Si ya tienes un plan activo, los lugares sugeridos actuales no cambiarán hasta que generes uno nuevo.
+              ⚠️ Tu zona se usará en tu <span className="text-white font-medium">próxima generación de plan</span>. El plan activo no cambia hasta que generes uno nuevo.
             </p>
           </div>
-          <div className="space-y-2">
-            {[
-              "Panama Ciudad",
-              "La Chorrera",
-              "Playas del Este",
-              "Penonome",
-              "Santiago",
-              "Chitre",
-              "Chiriqui",
-              "Colon",
-              "David",
-            ].map((zona) => (
-              <button
-                key={zona}
-                type="button"
-                onClick={() => handleUpdateZona(zona)}
-                className={`w-full rounded-lg border px-4 py-3 text-left text-sm transition-colors ${
-                  zonaEntrenamiento === zona
-                    ? "border-[#F16823] bg-[#2a2b2d] text-white"
-                    : "border-[#707070] bg-transparent text-[#B8B8B8] hover:border-[#909090]"
-                }`}
-              >
-                {zona}
-              </button>
+          <select
+            value={zonaEntrenamiento ?? ""}
+            onChange={(e) => handleUpdateZona(e.target.value)}
+            className="w-full rounded-lg border border-[#707070] bg-[#1B1C1E] px-3 py-2.5 text-sm text-white outline-none focus:border-[#F16823]"
+          >
+            <option value="" disabled>Selecciona tu zona</option>
+            {ZONAS_PANAMA.map((z) => (
+              <option key={z} value={z}>{z}</option>
             ))}
-          </div>
+          </select>
         </Section>
 
-        <Section title="Plan activo" description="Detalles de tu suscripcion actual.">
-          {profile?.is_premium && subscription ? (
-            <div className="space-y-3">
+        <Section title="Mi plan" description="Tu programa de entrenamiento actual.">
+          <div className="space-y-3">
+            {profile?.track && (
               <div className="flex justify-between items-center">
-                <span className="text-sm text-[#B8B8B8]">Estado</span>
-                <span className="text-sm font-medium text-green-400">Activo</span>
+                <span className="text-sm text-[#B8B8B8]">Programa</span>
+                <span className="text-sm font-medium text-white">
+                  {profile.track === "runner" ? "🏃 Runner Pro" : "💪 Transformación"}
+                </span>
               </div>
+            )}
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-[#B8B8B8]">Estado</span>
+              <span className={`text-sm font-medium ${profile?.is_premium ? "text-green-400" : "text-[#B8B8B8]"}`}>
+                {profile?.is_premium ? "Premium activo" : "Trial / Free"}
+              </span>
+            </div>
+            {subscription?.amount_usd && (
               <div className="flex justify-between items-center">
                 <span className="text-sm text-[#B8B8B8]">Monto</span>
                 <span className="text-sm font-medium text-white">${subscription.amount_usd}/mes</span>
               </div>
-              {subscription.current_period_end && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-[#B8B8B8]">Vence el</span>
-                  <span className="text-sm font-medium text-white">
-                    {new Date(subscription.current_period_end).toLocaleDateString("es-PA", { day: "numeric", month: "long", year: "numeric" })}
-                  </span>
-                </div>
-              )}
-              <div className="pt-2 border-t border-[#707070]/30">
-                <p className="text-xs text-[#B8B8B8]/60 mb-3">Si cancelas, mantendras acceso hasta el fin del periodo actual.</p>
-                <button type="button" onClick={handleCancelSubscription} className="text-sm text-red-400 hover:text-red-300 transition-colors">
-                  Cancelar suscripcion
-                </button>
+            )}
+            {subscription?.current_period_end && (
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-[#B8B8B8]">Vence el</span>
+                <span className="text-sm font-medium text-white">
+                  {new Date(subscription.current_period_end).toLocaleDateString("es-PA", { day: "numeric", month: "long", year: "numeric" })}
+                </span>
               </div>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <p className="text-sm text-[#B8B8B8]">No tienes un plan activo.</p>
+            )}
+            {!profile?.is_premium && (
               <button type="button" onClick={() => router.push("/pricing")}
                 className="w-full rounded-lg bg-[#F16823] px-4 py-2.5 text-sm font-medium text-white hover:opacity-90 transition-opacity">
-                Ver planes
+                Mejorar a Premium
               </button>
-            </div>
-          )}
+            )}
+            {profile?.is_premium && (
+              <div className="pt-2 border-t border-[#707070]/30">
+                <button type="button" onClick={handleCancelSubscription} className="text-sm text-red-400 hover:text-red-300 transition-colors">
+                  Cancelar suscripción
+                </button>
+              </div>
+            )}
+          </div>
         </Section>
 
         <Section title="Preferencias" description="Controla como RunClub se comunica contigo.">
