@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/adminAuth";
 
 export async function GET() {
+  const auth = await requireAdmin();
+  if ("error" in auth) return auth.error;
   const supabase = createServiceClient();
 
   const [u, pr, runner, transf, pl, pay, pending] = await Promise.all([

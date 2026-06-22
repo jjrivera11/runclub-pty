@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/adminAuth";
 
 export async function GET() {
+  const auth = await requireAdmin();
+  if ("error" in auth) return auth.error;
   const supabase = createServiceClient();
   const { data } = await supabase
     .from("training_spots")
@@ -11,6 +14,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAdmin();
+  if ("error" in auth) return auth.error;
   const supabase = createServiceClient();
   const body = await request.json();
   const { data } = await supabase.from("training_spots").insert(body).select().single();
@@ -18,6 +23,8 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const auth = await requireAdmin();
+  if ("error" in auth) return auth.error;
   const supabase = createServiceClient();
   const { id, ...updates } = await request.json();
   await supabase.from("training_spots").update(updates).eq("id", id);
@@ -25,6 +32,8 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const auth = await requireAdmin();
+  if ("error" in auth) return auth.error;
   const supabase = createServiceClient();
   const { id } = await request.json();
   await supabase.from("training_spots").delete().eq("id", id);
