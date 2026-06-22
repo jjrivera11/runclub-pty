@@ -649,7 +649,7 @@ export default function DashboardClient() {
         .from("profiles")
         .select("is_premium, is_verified, full_name, trial_ends_at, sexo, is_trail_promo_dismissed")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
       if (data) {
         setProfile(data);
         setIsPremium(data.is_premium ?? false);
@@ -659,7 +659,7 @@ export default function DashboardClient() {
         .from("onboarding_answers")
         .select("peso_lbs")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
       if (onboarding?.peso_lbs) setPesoInicial(onboarding.peso_lbs);
       if (data?.is_premium !== undefined) setIsPremium(data.is_premium ?? false);
       if (data?.is_verified !== undefined) setIsVerified(data.is_verified ?? false);
