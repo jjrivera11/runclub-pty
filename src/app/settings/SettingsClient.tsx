@@ -22,6 +22,7 @@ interface Props {
     talla_zapatillas?: string;
     talla_camiseta?: string;
     is_verified?: boolean;
+    zona_entrenamiento?: string;
   } | null;
   subscription: {
     status: string;
@@ -79,6 +80,7 @@ export default function SettingsClient({ userId, email, profile, subscription }:
   const [emailNotifications, setEmailNotifications] = useState(profile?.email_notifications ?? true);
   const [tallaZapatillas, setTallaZapatillas] = useState(profile?.talla_zapatillas ?? "");
   const [tallaCamiseta, setTallaCamiseta] = useState(profile?.talla_camiseta ?? "");
+  const [zonaEntrenamiento, setZonaEntrenamiento] = useState<string | null>(profile?.zona_entrenamiento ?? null);
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -137,6 +139,17 @@ export default function SettingsClient({ userId, email, profile, subscription }:
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
+  }
+
+  async function handleUpdateZona(zona: string) {
+    setZonaEntrenamiento(zona);
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase
+      .from("profiles")
+      .update({ zona_entrenamiento: zona })
+      .eq("id", user.id);
   }
 
   async function handleCancelSubscription() {
@@ -278,6 +291,40 @@ export default function SettingsClient({ userId, email, profile, subscription }:
             className="w-full rounded-lg bg-[#F16823] px-4 py-2.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50 transition-opacity">
             {saving ? "Guardando..." : "Guardar perfil"}
           </button>
+        </Section>
+
+        <Section title="Zona de entrenamiento" description="¿Dónde entrenas normalmente? Lo usamos para sugerirte rutas locales.">
+          <div className="rounded-lg border border-[#707070]/40 bg-[#2a2b2d] px-4 py-3 mb-3">
+            <p className="text-xs text-[#B8B8B8] leading-relaxed">
+              ⚠️ Tu zona de entrenamiento se usará en tu <span className="text-white font-medium">próxima generación de plan</span>. Si ya tienes un plan activo, los lugares sugeridos actuales no cambiarán hasta que generes uno nuevo.
+            </p>
+          </div>
+          <div className="space-y-2">
+            {[
+              "Panama Ciudad",
+              "La Chorrera",
+              "Playas del Este",
+              "Penonome",
+              "Santiago",
+              "Chitre",
+              "Chiriqui",
+              "Colon",
+              "David",
+            ].map((zona) => (
+              <button
+                key={zona}
+                type="button"
+                onClick={() => handleUpdateZona(zona)}
+                className={`w-full rounded-lg border px-4 py-3 text-left text-sm transition-colors ${
+                  zonaEntrenamiento === zona
+                    ? "border-[#F16823] bg-[#2a2b2d] text-white"
+                    : "border-[#707070] bg-transparent text-[#B8B8B8] hover:border-[#909090]"
+                }`}
+              >
+                {zona}
+              </button>
+            ))}
+          </div>
         </Section>
 
         <Section title="Plan activo" description="Detalles de tu suscripcion actual.">
