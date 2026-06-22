@@ -599,7 +599,7 @@ function TrailPromoBanner({ onDismiss }: { onDismiss: () => void }) {
         Completaste tu carrera. El trail running es una experiencia completamente diferente — montaña, naturaleza y un reto mayor. Hay carreras trail en Panamá perfectas para empezar.
       </p>
       <button
-        onClick={() => router.push("/onboarding")}
+        onClick={() => router.push("/onboarding?tipo=trail")}
         className="rounded-lg bg-green-600 px-4 py-2 text-xs font-medium text-white hover:opacity-90 transition-opacity"
       >
         Explorar trail running →

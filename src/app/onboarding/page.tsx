@@ -271,12 +271,19 @@ function OnboardingPageInner() {
     fetchRaces();
   }, []);
 
+  const tipoTrail = searchParams.get("tipo") === "trail";
+
   useEffect(() => {
     if (tipoMantenimiento) {
       setObjetivo("bajar_peso");
       setTrack("transformacion");
     }
-  }, [tipoMantenimiento]);
+    if (tipoTrail) {
+      setObjetivo("terminar_carrera");
+      setTrack("runner");
+      setIsTrail(true);
+    }
+  }, [tipoMantenimiento, tipoTrail]);
 
   const canProceed = useCallback((): boolean => {
     if (step === 0) return objetivo !== null && track !== null;
