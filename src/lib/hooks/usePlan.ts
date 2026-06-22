@@ -80,8 +80,8 @@ export function usePlan() {
       .maybeSingle();
 
     if (planError) {
-      window.location.href = "/onboarding";
-      return;
+      console.error("usePlan error:", planError);
+      setError("No se pudo cargar tu plan. Intenta de nuevo.");
       setLoading(false);
       return;
     }
