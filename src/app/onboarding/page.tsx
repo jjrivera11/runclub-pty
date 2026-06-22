@@ -111,6 +111,7 @@ const RUNNER_STEP_LABELS = [
   "Lesión o limitación",
   "Tiempo reciente",
   "Horario",
+  "Zona",
   "Compañero",
 ];
 
@@ -218,6 +219,7 @@ function OnboardingPageInner() {
   const [partnerZona, setPartnerZona] = useState<string | null>(null);
   const [partnerWhatsapp, setPartnerWhatsapp] = useState("");
   const [partnerGenero, setPartnerGenero] = useState<string | null>(null);
+  const [zonaEntrenamiento, setZonaEntrenamiento] = useState<string | null>(null);
   const [showAllRaces, setShowAllRaces] = useState(false);
 
   const isCustomRace = selectedRaceId === CUSTOM_RACE_ID;
@@ -305,6 +307,8 @@ function OnboardingPageInner() {
         case 8:
           return horario !== null;
         case 9:
+          return zonaEntrenamiento !== null;
+        case 10:
           return buscaPartner === false || (buscaPartner === true && partnerZona !== null && partnerWhatsapp.trim().length >= 7 && partnerGenero !== null);
         default:
           return false;
@@ -361,6 +365,7 @@ function OnboardingPageInner() {
     partnerZona,
     partnerWhatsapp,
     partnerGenero,
+    zonaEntrenamiento,
   ]);
 
   function handleObjectiveSelect(option: ObjectiveOption) {
@@ -494,6 +499,7 @@ function OnboardingPageInner() {
         partner_whatsapp: buscaPartner ? partnerWhatsapp : null,
         partner_nivel: nivel ?? expPesas ?? null,
         partner_genero: buscaPartner ? partnerGenero : null,
+        zona_entrenamiento: zonaEntrenamiento,
       })
       .eq("id", user.id);
 
@@ -944,6 +950,27 @@ function OnboardingPageInner() {
             </div>
           );
         case 9:
+          return (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-white">
+                ¿Dónde entrenas normalmente?
+              </h2>
+              <p className="text-sm text-[#B8B8B8]">
+                Usamos esto para sugerirte rutas y lugares de entrenamiento cerca de ti.
+              </p>
+              <div className="space-y-3">
+                {ZONAS_PANAMA.map((zona) => (
+                  <OptionCard
+                    key={zona}
+                    label={zona}
+                    selected={zonaEntrenamiento === zona}
+                    onClick={() => setZonaEntrenamiento(zona)}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        case 10:
           return (
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-white">
