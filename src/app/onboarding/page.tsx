@@ -47,7 +47,9 @@ const OBJECTIVE_OPTIONS: ObjectiveOption[] = [
 const DISTANCIA_OPTIONS: { label: string; value: DistanciaCarrera }[] = [
   { label: "5K", value: "5k" },
   { label: "10K", value: "10k" },
+  { label: "15K", value: "15k" },
   { label: "21K", value: "21k" },
+  { label: "42K", value: "42k" },
 ];
 
 const CUSTOM_RACE_ID = "__custom__";
@@ -216,6 +218,7 @@ function OnboardingPageInner() {
   const [partnerZona, setPartnerZona] = useState<string | null>(null);
   const [partnerWhatsapp, setPartnerWhatsapp] = useState("");
   const [partnerGenero, setPartnerGenero] = useState<string | null>(null);
+  const [showAllRaces, setShowAllRaces] = useState(false);
 
   const isCustomRace = selectedRaceId === CUSTOM_RACE_ID;
 
@@ -664,17 +667,43 @@ function OnboardingPageInner() {
               </div>
             </div>
           );
-        case 4:
+        case 4: {
+          const distanciaKm: Record<DistanciaCarrera, number[]> = {
+            "5k": [5],
+            "10k": [10],
+            "15k": [15],
+            "21k": [21, 21.1],
+            "42k": [42],
+            "50k": [50],
+            "otro": [],
+          };
+
+          const kmValues = distancia ? distanciaKm[distancia] ?? [] : [];
+
+          const filteredRaces = distancia && kmValues.length > 0
+            ? races.filter((race) =>
+                race.distances?.some((d) => kmValues.some((k) => Math.abs(d - k) < 0.5))
+              )
+            : races;
+
+          const racesToShow = showAllRaces ? races : filteredRaces;
+          const hasFilter = filteredRaces.length < races.length && !showAllRaces;
+
           return (
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-white">
                 ¿Ya tienes una carrera en mente?
               </h2>
+              {distancia && filteredRaces.length === 0 && !showAllRaces && (
+                <div className="rounded-lg border border-[#707070]/40 bg-[#2a2b2d] px-4 py-3">
+                  <p className="text-sm text-[#B8B8B8]">No hay carreras disponibles para tu distancia aún.</p>
+                </div>
+              )}
               {racesLoading ? (
                 <p className="text-[#B8B8B8]">Cargando carreras...</p>
               ) : (
                 <div className="space-y-3">
-                  {races.map((race) => (
+                  {racesToShow.map((race) => (
                     <div key={race.id}>
                       <OptionCard
                         label={race.name}
@@ -690,7 +719,10 @@ function OnboardingPageInner() {
                               <button
                                 key={d}
                                 type="button"
-                                onClick={() => { setSelectedRaceDistance(d); setDistancia(d <= 5 ? "5k" : d <= 10 ? "10k" : d <= 15 ? "15k" : d <= 21 ? "21k" : d <= 42 ? "42k" : "otro"); }}
+                                onClick={() => {
+                                  setSelectedRaceDistance(d);
+                                  setDistancia(d <= 5 ? "5k" : d <= 10 ? "10k" : d <= 15 ? "15k" : d <= 21 ? "21k" : d <= 42 ? "42k" : "otro");
+                                }}
                                 className={`rounded-full px-3 py-1 text-sm font-medium transition-colors border ${
                                   selectedRaceDistance === d
                                     ? "border-[#F16823] bg-[#F16823]/10 text-[#F16823]"
@@ -705,6 +737,27 @@ function OnboardingPageInner() {
                       )}
                     </div>
                   ))}
+
+                  {hasFilter && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAllRaces(true)}
+                      className="w-full rounded-lg border border-[#707070]/40 bg-transparent px-4 py-3 text-sm text-[#B8B8B8] hover:border-[#909090] hover:text-white transition-colors"
+                    >
+                      Ver todas las carreras disponibles ({races.length})
+                    </button>
+                  )}
+
+                  {showAllRaces && distancia && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAllRaces(false)}
+                      className="w-full rounded-lg border border-[#707070]/40 bg-transparent px-4 py-3 text-sm text-[#B8B8B8] hover:border-[#909090] hover:text-white transition-colors"
+                    >
+                      Mostrar solo carreras de {distancia.toUpperCase()}
+                    </button>
+                  )}
+
                   <OptionCard
                     label="✏️ Otra carrera"
                     description="Ingresa los datos de tu carrera"
@@ -716,10 +769,7 @@ function OnboardingPageInner() {
               {isCustomRace && (
                 <div className="space-y-4 rounded-lg border border-[#707070] bg-[#2a2b2d] p-4">
                   <div>
-                    <label
-                      htmlFor="custom-race-name"
-                      className="mb-1.5 block text-sm text-[#B8B8B8]"
-                    >
+                    <label htmlFor="custom-race-name" className="mb-1.5 block text-sm text-[#B8B8B8]">
                       Nombre de la carrera
                     </label>
                     <input
@@ -733,36 +783,24 @@ function OnboardingPageInner() {
                     />
                   </div>
                   <div>
-                    <label
-                      htmlFor="custom-race-distance"
-                      className="mb-1.5 block text-sm text-[#B8B8B8]"
-                    >
+                    <label htmlFor="custom-race-distance" className="mb-1.5 block text-sm text-[#B8B8B8]">
                       Distancia
                     </label>
                     <select
                       id="custom-race-distance"
                       required
                       value={customRaceDistancia ?? ""}
-                      onChange={(e) =>
-                        setCustomRaceDistancia(e.target.value as DistanciaCarrera)
-                      }
+                      onChange={(e) => setCustomRaceDistancia(e.target.value as DistanciaCarrera)}
                       className="w-full rounded-lg border border-[#707070] bg-[#1B1C1E] px-4 py-3 text-white outline-none focus:border-[#F16823] focus:ring-1 focus:ring-[#F16823]"
                     >
-                      <option value="" disabled>
-                        Selecciona una distancia
-                      </option>
+                      <option value="" disabled>Selecciona una distancia</option>
                       {CUSTOM_RACE_DISTANCIA_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
+                        <option key={option.value} value={option.value}>{option.label}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label
-                      htmlFor="custom-race-date"
-                      className="mb-1.5 block text-sm text-[#B8B8B8]"
-                    >
+                    <label htmlFor="custom-race-date" className="mb-1.5 block text-sm text-[#B8B8B8]">
                       Fecha de la carrera
                     </label>
                     <input
@@ -800,6 +838,7 @@ function OnboardingPageInner() {
               </div>
             </div>
           );
+        }
         case 5:
           return (
             <div className="space-y-4">
