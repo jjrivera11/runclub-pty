@@ -1,6 +1,6 @@
 import { ImageResponse } from "@vercel/og";
-import { readFileSync } from "fs";
-import { join } from "path";
+
+export const runtime = "edge";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,39 +15,35 @@ export async function GET(request: Request) {
   const firstName = name.split(" ")[0];
   const origin = new URL(request.url).origin;
 
-  const fontData = readFileSync(join(process.cwd(), "public/fonts/Inter-Bold.ttf"));
-
   try {
     return new ImageResponse(
       (
-        <div style={{ width: "400px", height: "400px", background: "#111111", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "36px", fontFamily: "Inter", position: "relative" }}>
+        <div style={{ width: "400px", height: "400px", background: "#111111", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "36px", fontFamily: "Arial Black, sans-serif", position: "relative" }}>
           <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: "#F16823" }} />
 
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
-              <div style={{ display: "flex", width: "160px", justifyContent: "flex-start" }}>
-                <img src={`${origin}/logo.png`} width={120} height={40} style={{ objectFit: "contain" }} />
-              </div>
+              <img src={`${origin}/logo.png`} width={160} height={54} style={{ objectFit: "contain", objectPosition: "left" }} />
               <div style={{ background: "#F16823", borderRadius: "6px", padding: "4px 10px", display: "flex" }}>
-                <span style={{ color: "#ffffff", fontSize: "11px", fontWeight: 700 }}>{trackLabel}</span>
+                <span style={{ color: "#ffffff", fontSize: "11px" }}>{trackLabel}</span>
               </div>
             </div>
             <p style={{ color: "#707070", fontSize: "12px", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "1px" }}>Empecé mi plan</p>
-            <h1 style={{ color: "#ffffff", fontSize: "36px", fontWeight: 700, margin: "0 0 4px", lineHeight: 1.1 }}>{firstName}</h1>
-            {race && <p style={{ color: "#F16823", fontSize: "16px", fontWeight: 700, margin: 0 }}>{race}</p>}
+            <h1 style={{ color: "#ffffff", fontSize: "36px", margin: "0 0 4px", lineHeight: 1.1 }}>{firstName}</h1>
+            {race && <p style={{ color: "#F16823", fontSize: "16px", margin: 0 }}>{race}</p>}
           </div>
 
           <div style={{ display: "flex", gap: "16px" }}>
             <div style={{ flex: 1, background: "#1B1C1E", borderRadius: "10px", padding: "14px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <span style={{ color: "#F16823", fontSize: "28px", fontWeight: 700, lineHeight: 1 }}>{weeks}</span>
+              <span style={{ color: "#F16823", fontSize: "28px", lineHeight: 1 }}>{weeks}</span>
               <span style={{ color: "#707070", fontSize: "10px", marginTop: "3px", textTransform: "uppercase", letterSpacing: "0.5px" }}>semanas</span>
             </div>
             <div style={{ flex: 1, background: "#1B1C1E", borderRadius: "10px", padding: "14px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <span style={{ color: "#F16823", fontSize: "28px", fontWeight: 700, lineHeight: 1 }}>🔥 {streak}</span>
+              <span style={{ color: "#F16823", fontSize: "28px", lineHeight: 1 }}>🔥 {streak}</span>
               <span style={{ color: "#707070", fontSize: "10px", marginTop: "3px", textTransform: "uppercase", letterSpacing: "0.5px" }}>días racha</span>
             </div>
             <div style={{ flex: 1, background: "#1B1C1E", borderRadius: "10px", padding: "14px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <span style={{ color: "#F16823", fontSize: "28px", fontWeight: 700, lineHeight: 1 }}>0%</span>
+              <span style={{ color: "#F16823", fontSize: "28px", lineHeight: 1 }}>0%</span>
               <span style={{ color: "#707070", fontSize: "10px", marginTop: "3px", textTransform: "uppercase", letterSpacing: "0.5px" }}>completado</span>
             </div>
           </div>
@@ -58,11 +54,7 @@ export async function GET(request: Request) {
           </div>
         </div>
       ),
-      {
-        width: 400,
-        height: 400,
-        fonts: [{ name: "Inter", data: fontData, style: "normal", weight: 700 }],
-      }
+      { width: 400, height: 400 }
     );
   } catch (e) {
     console.error("share-card error:", e);
