@@ -70,6 +70,33 @@ export async function GET(request: Request) {
     }
   }
 
+  // Revocar is_premium en suscripciones canceladas que ya vencieron
+  const { data: expiredCancelled, error: cancelledError } = await supabase
+    .from("subscriptions")
+    .select("id, user_id")
+    .eq("status", "cancelled")
+    .lt("current_period_end", now.toISOString());
+
+  if (cancelledError) {
+    console.error("check-subscriptions cancelled error:", cancelledError);
+  } else {
+    for (const subscription of expiredCancelled ?? []) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_premium")
+        .eq("id", subscription.user_id)
+        .single();
+
+      if (profile?.is_premium) {
+        await supabase
+          .from("profiles")
+          .update({ is_premium: false, subscription_status: "cancelled" })
+          .eq("id", subscription.user_id);
+        processed++;
+      }
+    }
+  }
+
   const { data: expiringSoon, error: expiringError } = await supabase
     .from("subscriptions")
     .select("id, user_id, current_period_end")
