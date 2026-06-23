@@ -1,5 +1,4 @@
 import { ImageResponse } from "@vercel/og";
-import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "edge";
 
@@ -14,6 +13,12 @@ export async function GET(request: Request) {
   const isRunner = track === "runner";
   const trackLabel = isRunner ? "🏃 Runner Pro" : "💪 Transformación";
   const firstName = name.split(" ")[0];
+  const origin = new URL(request.url).origin;
+
+  // Cargar fuente bold
+  const fontBold = await fetch(
+    "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZJhiI2B.woff2"
+  ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
     (
@@ -26,18 +31,16 @@ export async function GET(request: Request) {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "36px",
-          fontFamily: "sans-serif",
+          fontFamily: "Inter",
           position: "relative",
         }}
       >
-        {/* Acento superior */}
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: "#F16823" }} />
 
-        {/* Header */}
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "28px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
             <img
-              src={`${new URL(request.url).origin}/logo.png`}
+              src={`${origin}/logo.png`}
               width={160}
               height={54}
               style={{ objectFit: "contain" }}
@@ -47,11 +50,10 @@ export async function GET(request: Request) {
             </div>
           </div>
           <p style={{ color: "#707070", fontSize: "12px", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "1px" }}>Empecé mi plan</p>
-          <h1 style={{ color: "#ffffff", fontSize: "32px", fontWeight: 700, margin: "0 0 4px", lineHeight: 1.1 }}>{firstName}</h1>
+          <h1 style={{ color: "#ffffff", fontSize: "32px", fontWeight: 700, margin: "0 0 4px", lineHeight: 1.1, fontFamily: "Inter" }}>{firstName}</h1>
           {race && <p style={{ color: "#F16823", fontSize: "16px", fontWeight: 600, margin: 0 }}>{race}</p>}
         </div>
 
-        {/* Stats */}
         <div style={{ display: "flex", gap: "16px" }}>
           <div style={{ flex: 1, background: "#1B1C1E", borderRadius: "10px", padding: "14px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
             <span style={{ color: "#F16823", fontSize: "28px", fontWeight: 700, lineHeight: 1 }}>{weeks}</span>
@@ -67,13 +69,23 @@ export async function GET(request: Request) {
           </div>
         </div>
 
-        {/* Footer */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span style={{ color: "#404040", fontSize: "11px" }}>runclubpty.com</span>
           <span style={{ color: "#404040", fontSize: "11px" }}>Coach JJ · Panamá</span>
         </div>
       </div>
     ),
-    { width: 400, height: 400 }
+    {
+      width: 400,
+      height: 400,
+      fonts: [
+        {
+          name: "Inter",
+          data: fontBold,
+          style: "normal",
+          weight: 700,
+        },
+      ],
+    }
   );
 }
