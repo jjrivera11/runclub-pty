@@ -36,7 +36,12 @@ export async function GET(request: Request) {
         {/* Header */}
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "28px" }}>
-            <span style={{ color: "#ffffff", fontWeight: 700, fontSize: "15px", letterSpacing: "0.5px" }}>RunClub Panamá</span>
+            <img
+              src={`${new URL(request.url).origin}/logo.png`}
+              width={120}
+              height={40}
+              style={{ objectFit: "contain" }}
+            />
             <div style={{ background: "#F16823", borderRadius: "6px", padding: "4px 10px", display: "flex" }}>
               <span style={{ color: "#ffffff", fontSize: "11px", fontWeight: 700 }}>{trackLabel}</span>
             </div>
