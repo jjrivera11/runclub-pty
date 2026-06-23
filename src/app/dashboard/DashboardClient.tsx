@@ -230,6 +230,9 @@ function StatsCard({
   completionPercent,
   streak,
   progress,
+  fullName,
+  raceName,
+  track,
 }: {
   currentWeek: number;
   totalWeeks: number;
@@ -239,6 +242,9 @@ function StatsCard({
   completionPercent: number;
   streak: number;
   progress: DayProgress[];
+  fullName?: string;
+  raceName?: string;
+  track?: string;
 }) {
   const DAYS = ["L", "M", "X", "J", "V", "S", "D"];
   const dayNames = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
@@ -268,6 +274,19 @@ function StatsCard({
             style={{ width: `${completionPercent}%` }}
           />
         </div>
+        <a
+          href={`/api/share-card?name=${encodeURIComponent(fullName ?? "Atleta")}&race=${encodeURIComponent(raceName ?? "")}&weeks=${totalWeeks}&streak=${streak}&track=${track ?? "runner"}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 flex items-center gap-1.5 text-xs text-[#707070] hover:text-[#F16823] transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" y1="2" x2="12" y2="15"/>
+          </svg>
+          Compartir mi plan
+        </a>
       </div>
 
       {/* Métricas de la semana */}
@@ -899,6 +918,9 @@ export default function DashboardClient() {
           completionPercent={completionPercent}
           streak={streak}
           progress={progress}
+          fullName={profile?.full_name}
+          raceName={plan?.race_name}
+          track={plan?.track}
         />
 
         {showTrailPromo && (
