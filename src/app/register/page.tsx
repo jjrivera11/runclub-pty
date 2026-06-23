@@ -60,19 +60,25 @@ export default function RegisterPage() {
     }
 
     const refCode = new URLSearchParams(window.location.search).get("ref");
-    if (refCode) {
-      const { createClient } = await import("@/lib/supabase/client");
-      const supabase = createClient();
+    if (refCode && data.user?.id) {
       const { data: referrer } = await supabase
         .from("profiles")
         .select("id")
         .eq("referral_code", refCode)
         .single();
+
       if (referrer) {
-        await supabase
-          .from("profiles")
-          .update({ referred_by: referrer.id })
-          .eq("id", data.user!.id);
+        // Retry con delay para dar tiempo al trigger de profiles
+        let updated = false;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          if (attempt > 0) await new Promise((r) => setTimeout(r, 500 * attempt));
+          const { error: refError } = await supabase
+            .from("profiles")
+            .update({ referred_by: referrer.id })
+            .eq("id", data.user.id);
+          if (!refError) { updated = true; break; }
+        }
+        if (!updated) console.error("referred_by no se pudo guardar para", data.user.id);
       }
     }
 
