@@ -1,6 +1,6 @@
 import { ImageResponse } from "@vercel/og";
-import { readFileSync } from "fs";
-import { join } from "path";
+
+export const runtime = "edge";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,12 +15,16 @@ export async function GET(request: Request) {
   const firstName = name.split(" ")[0];
   const origin = new URL(request.url).origin;
 
-  const fontData = readFileSync(join(process.cwd(), "public/fonts/Inter-Bold.ttf"));
+  let fontData: ArrayBuffer | null = null;
+  try {
+    const res = await fetch(`${origin}/fonts/Inter-Bold.ttf`);
+    if (res.ok) fontData = await res.arrayBuffer();
+  } catch {}
 
   try {
     return new ImageResponse(
       (
-        <div style={{ width: "400px", height: "400px", background: "#111111", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "36px", fontFamily: "Inter", position: "relative" }}>
+        <div style={{ width: "400px", height: "400px", background: "#111111", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "36px", fontFamily: fontData ? "Inter" : "Arial Black, sans-serif", position: "relative" }}>
           <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: "#F16823" }} />
 
           <div style={{ display: "flex", flexDirection: "column" }}>
@@ -61,7 +65,7 @@ export async function GET(request: Request) {
       {
         width: 400,
         height: 400,
-        fonts: [{ name: "Inter", data: fontData, style: "normal", weight: 700 }],
+        ...(fontData ? { fonts: [{ name: "Inter", data: fontData, style: "normal" as const, weight: 700 }] } : {}),
       }
     );
   } catch (e) {
