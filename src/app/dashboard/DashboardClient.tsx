@@ -264,9 +264,22 @@ function StatsCard({
             <p className="text-xs text-[#707070] uppercase tracking-widest mb-1">Progreso del plan</p>
             <p className="text-3xl font-bold text-white">{completionPercent}%</p>
           </div>
-          <p className="text-sm text-[#B8B8B8] mb-1">
-            Semana <span className="text-white font-semibold">{currentWeek}</span> de {totalWeeks}
-          </p>
+          <div className="flex items-center gap-3 mb-1">
+            <p className="text-sm text-[#B8B8B8]">
+              Semana <span className="text-white font-semibold">{currentWeek}</span> de {totalWeeks}
+            </p>
+            <a
+              href={`/api/share-card?name=${encodeURIComponent(fullName ?? "Atleta")}&race=${encodeURIComponent(raceName ?? "")}&weeks=${totalWeeks}&streak=${streak}&track=${track ?? "runner"}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Compartir mi plan"
+              className="text-[#707070] hover:text-[#F16823] transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
+              </svg>
+            </a>
+          </div>
         </div>
         <div className="h-2 rounded-full bg-[#1B1C1E] overflow-hidden">
           <div
@@ -274,19 +287,6 @@ function StatsCard({
             style={{ width: `${completionPercent}%` }}
           />
         </div>
-        <a
-          href={`/api/share-card?name=${encodeURIComponent(fullName ?? "Atleta")}&race=${encodeURIComponent(raceName ?? "")}&weeks=${totalWeeks}&streak=${streak}&track=${track ?? "runner"}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3 flex items-center gap-1.5 text-xs text-[#707070] hover:text-[#F16823] transition-colors"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-            <polyline points="16 6 12 2 8 6"/>
-            <line x1="12" y1="2" x2="12" y2="15"/>
-          </svg>
-          Compartir mi plan
-        </a>
       </div>
 
       {/* Métricas de la semana */}

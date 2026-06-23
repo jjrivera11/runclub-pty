@@ -38,8 +38,8 @@ export async function GET(request: Request) {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "28px" }}>
             <img
               src={`${new URL(request.url).origin}/logo.png`}
-              width={120}
-              height={40}
+              width={80}
+              height={28}
               style={{ objectFit: "contain" }}
             />
             <div style={{ background: "#F16823", borderRadius: "6px", padding: "4px 10px", display: "flex" }}>
