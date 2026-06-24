@@ -853,6 +853,67 @@ export default function DashboardClient() {
     }
   }
 
+  async function handleSessionSave(data: Parameters<typeof toggleDay>[2]) {
+    if (!pendingSession || !profile?.id) return;
+    await toggleDay(pendingSession.weekNumber, pendingSession.dayName, data);
+
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+      const { logPointEvent, hasLoggedEvent } = await import("@/lib/points");
+
+      // Puntos por día completado
+      await logPointEvent(supabase, profile.id, "day_completed", {
+        week: pendingSession.weekNumber,
+        day: pendingSession.dayName,
+      });
+
+      // Verificar racha después de completar
+      const newStreak = streak + 1;
+      if (newStreak === 7) {
+        const alreadyLogged = await hasLoggedEvent(supabase, profile.id, "streak_7", 8);
+        if (!alreadyLogged) await logPointEvent(supabase, profile.id, "streak_7");
+      }
+      if (newStreak === 30) {
+        const alreadyLogged = await hasLoggedEvent(supabase, profile.id, "streak_30", 32);
+        if (!alreadyLogged) await logPointEvent(supabase, profile.id, "streak_30");
+      }
+
+      // Verificar si la semana quedó completa
+      const weekData = plan?.plan_json.semanas.find((w) => w.numero === pendingSession.weekNumber);
+      if (weekData) {
+        const updatedProgress = [
+          ...progress,
+          { week_number: pendingSession.weekNumber, day_name: pendingSession.dayName, completed: true }
+        ];
+        const allDone = weekData.dias.every((d) =>
+          updatedProgress.some((p) => p.week_number === weekData.numero && p.day_name === d.dia && p.completed)
+        );
+        if (allDone) {
+          const alreadyLogged = await hasLoggedEvent(supabase, profile.id, "week_completed");
+          if (!alreadyLogged) {
+            await logPointEvent(supabase, profile.id, "week_completed", {
+              week: pendingSession.weekNumber,
+            });
+          }
+        }
+      }
+
+      // Refrescar puntos
+      const { data: updatedPoints } = await supabase
+        .from("user_points")
+        .select("total_points, weekly_rank, last_week_rank")
+        .eq("user_id", profile.id)
+        .maybeSingle();
+      if (updatedPoints) setUserPoints(updatedPoints);
+
+    } catch (e) {
+      console.error("points error:", e);
+    }
+
+    setPendingSession(null);
+  }
+
   if (loading) {
     return (
       <div className="min-h-full bg-[#1B1C1E]">
@@ -1158,10 +1219,7 @@ export default function DashboardClient() {
           tipoSesion={pendingSession.tipoSesion}
           plannedDistanceKm={pendingSession.distanceKm}
           plannedDurationMin={pendingSession.durationMin}
-          onSave={async (data) => {
-            await toggleDay(pendingSession.weekNumber, pendingSession.dayName, data);
-            setPendingSession(null);
-          }}
+          onSave={handleSessionSave}
           onSkip={async () => {
             await toggleDay(pendingSession.weekNumber, pendingSession.dayName);
             setPendingSession(null);
