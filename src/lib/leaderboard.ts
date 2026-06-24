@@ -21,9 +21,9 @@ const GHOST_RUNNER_PRO = [
   { name: "Mariana Delgado", points: 300 },
   { name: "Carlos Góndola", points: 270 },
   { name: "Luciana Mora", points: 240 },
-  { name: "Fernanda Ramos", points: 210 },
-  { name: "Alejandro Espino", points: 180 },
-  { name: "Carolina Ábrego", points: 150 },
+  { name: "Fernanda Ramos", points: 80 },
+  { name: "Alejandro Espino", points: 60 },
+  { name: "Carolina Ábrego", points: 40 },
 ];
 
 const GHOST_TRANSFORMACION = [
@@ -39,9 +39,9 @@ const GHOST_TRANSFORMACION = [
   { name: "Daniela Espino", points: 280 },
   { name: "Ricardo Mora", points: 250 },
   { name: "Sofía Ramos", points: 220 },
-  { name: "Felipe Góndola", points: 190 },
-  { name: "Natalia Delgado", points: 160 },
-  { name: "Diego Martínez", points: 130 },
+  { name: "Felipe Góndola", points: 80 },
+  { name: "Natalia Delgado", points: 60 },
+  { name: "Diego Martínez", points: 40 },
 ];
 
 export function buildLeaderboardRows(

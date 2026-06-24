@@ -268,72 +268,79 @@ function StatsCard({
 
   return (
     <div className="rounded-2xl border border-[#707070]/30 bg-[#2a2b2d] overflow-hidden">
-      {/* Progreso del plan */}
+      {/* Progreso del plan + Ranking — grid 50/50 */}
       <div className="px-5 pt-5 pb-4 border-b border-[#707070]/20">
-        <div className="flex items-start justify-between mb-3">
-          <div>
-            <p className="text-xs text-[#707070] uppercase tracking-widest mb-1">Progreso del plan</p>
-            <p className="text-3xl font-bold text-white">{completionPercent}%</p>
-          </div>
-          <div className="flex flex-col items-end gap-2">
-            <a
-              href={`/api/share-card?name=${encodeURIComponent(fullName ?? "Atleta")}&race=${encodeURIComponent(raceName ?? "")}&weeks=${totalWeeks}&streak=${streak}&track=${track ?? "runner"}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Compartir mi plan"
-              className="text-[#F16823] hover:opacity-70 transition-opacity"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
-              </svg>
-            </a>
-            <p className="text-sm text-[#B8B8B8]">
+        <div className="grid grid-cols-2 gap-0">
+
+          {/* Columna izquierda — Progreso */}
+          <div className="pr-4 border-r border-[#707070]/20">
+            <div className="flex items-start justify-between mb-2">
+              <div>
+                <p className="text-xs text-[#707070] uppercase tracking-widest mb-1">Progreso del plan</p>
+                <p className="text-3xl font-bold text-white">{completionPercent}%</p>
+              </div>
+              <a
+                href={`/api/share-card?name=${encodeURIComponent(fullName ?? "Atleta")}&race=${encodeURIComponent(raceName ?? "")}&weeks=${totalWeeks}&streak=${streak}&track=${track ?? "runner"}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Compartir mi plan"
+                className="text-[#F16823] hover:opacity-70 transition-opacity mt-1"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
+                </svg>
+              </a>
+            </div>
+            <div className="h-2 rounded-full bg-[#1B1C1E] overflow-hidden mb-2">
+              <div
+                className="h-full rounded-full bg-[#F16823] transition-all duration-700 ease-out"
+                style={{ width: `${completionPercent}%` }}
+              />
+            </div>
+            <p className="text-xs text-[#B8B8B8]">
               Semana <span className="text-white font-semibold">{currentWeek}</span> de {totalWeeks}
             </p>
           </div>
-        </div>
-        <div className="h-2 rounded-full bg-[#1B1C1E] overflow-hidden">
-          <div
-            className="h-full rounded-full bg-[#F16823] transition-all duration-700 ease-out"
-            style={{ width: `${completionPercent}%` }}
-          />
-        </div>
-        {myPoints !== undefined && myUserId && myName && track && (
-          <div className="mt-4 pt-4 border-t border-[#2a2b2d]">
+
+          {/* Columna derecha — Ranking */}
+          <div className="pl-4 flex flex-col justify-center">
             <div className="flex items-center gap-1.5 mb-3">
               <span className="text-[10px] uppercase tracking-widest text-[#707070]">
                 {track === "transformacion" ? "Transformación" : "Runner Pro"} · Ranking
               </span>
               <button
                 onClick={() => setShowPointsModal(true)}
-                className="w-4 h-4 rounded-full border border-[#707070] flex items-center justify-center text-[#707070] text-[10px] font-bold hover:border-[#F16823] hover:text-[#F16823] transition-colors"
+                className="w-4 h-4 rounded-full border border-[#707070] flex items-center justify-center text-[#707070] text-[10px] font-bold hover:border-[#F16823] hover:text-[#F16823] transition-colors flex-shrink-0"
               >
                 ?
               </button>
             </div>
-            {buildLeaderboardRows(myPoints, myUserId, myName, track, weeklyRankChange ?? 0).map((row) => (
-              <div
-                key={row.user_id}
-                className={`flex items-center gap-2 py-1.5 px-2 rounded-md ${row.isMe ? "bg-[#F16823]/5" : ""}`}
-              >
-                <span className={`text-xs font-bold min-w-[20px] ${row.isMe ? "text-[#F16823]" : "text-[#707070]"}`}>
-                  {row.rank}
-                </span>
-                <span className={`text-xs flex-1 ${row.isMe ? "text-white font-semibold" : "text-[#B8B8B8]"}`}>
-                  {row.isMe ? "Tú" : row.name}
-                </span>
-                <span className={`text-[11px] ${row.isMe ? "text-[#F16823]" : "text-[#707070]"}`}>
-                  {row.points} pts
-                </span>
-                {row.isMe && row.weeklyRankChange !== 0 && (
-                  <span className={row.weeklyRankChange > 0 ? "text-[#10B981] text-[10px]" : "text-red-400 text-[10px]"}>
-                    {row.weeklyRankChange > 0 ? "↑" : "↓"}
+            {myPoints !== undefined && myUserId && myName && track && (
+              buildLeaderboardRows(myPoints, myUserId, myName, track, weeklyRankChange ?? 0).map((row) => (
+                <div
+                  key={row.user_id}
+                  className={`flex items-center gap-2 py-1 px-1.5 rounded-md ${row.isMe ? "bg-[#F16823]/5" : ""}`}
+                >
+                  <span className={`text-xs font-bold min-w-[18px] ${row.isMe ? "text-[#F16823]" : "text-[#707070]"}`}>
+                    {row.rank}
                   </span>
-                )}
-              </div>
-            ))}
+                  <span className={`text-xs flex-1 truncate ${row.isMe ? "text-white font-semibold" : "text-[#B8B8B8]"}`}>
+                    {row.isMe ? "Tú" : row.name}
+                  </span>
+                  <span className={`text-[11px] ${row.isMe ? "text-[#F16823]" : "text-[#707070]"}`}>
+                    {row.points}
+                  </span>
+                  {row.isMe && row.weeklyRankChange !== 0 && (
+                    <span className={row.weeklyRankChange > 0 ? "text-[#10B981] text-[10px]" : "text-red-400 text-[10px]"}>
+                      {row.weeklyRankChange > 0 ? "↑" : "↓"}
+                    </span>
+                  )}
+                </div>
+              ))
+            )}
           </div>
-        )}
+
+        </div>
       </div>
 
       {/* Métricas de la semana */}
