@@ -82,6 +82,12 @@ export default function RegisterPage() {
       }
     }
 
+    // 50 pts de bienvenida
+    try {
+      const { logPointEvent } = await import("@/lib/points");
+      await logPointEvent(supabase, data.user!.id, "profile_complete");
+    } catch {}
+
     if (data?.user?.email) {
       sendWelcomeEmail(data.user.email, nombre.trim()).catch(() => {});
     }
