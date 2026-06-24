@@ -55,6 +55,33 @@ export default function RootLayout({
     >
       <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SportsOrganization",
+              "name": "RunClub Panamá",
+              "url": "https://runclubpty.com",
+              "logo": "https://runclubpty.com/logo.png",
+              "description": "Programa de entrenamiento de running personalizado con inteligencia artificial para corredores en Panamá.",
+              "founder": {
+                "@type": "Person",
+                "name": "José Javier Rivera G.",
+                "jobTitle": "Fundador y Coach",
+                "url": "https://runclubpty.com/nosotros"
+              },
+              "address": {
+                "@type": "PostalAddress",
+                "addressCountry": "PA",
+                "addressRegion": "Panamá"
+              },
+              "sport": "Running",
+              "email": "coach@runclubpty.com",
+              "sameAs": ["https://www.instagram.com/runclubpty"]
+            })
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
