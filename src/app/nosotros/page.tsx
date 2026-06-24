@@ -2,7 +2,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 function FadeInSection({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const ref = useRef(null);
@@ -78,12 +77,11 @@ export default function NosotrosPage() {
         {/* Hero */}
         <FadeInSection>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 items-center mb-20">
-            <div className="rounded-2xl overflow-hidden aspect-[3/4] relative">
-              <Image
+            <div className="rounded-2xl overflow-hidden aspect-[3/4]">
+              <img
                 src="/jj-santiago.jpg"
                 alt="José Javier Rivera y Santiago"
-                fill
-                className="object-cover object-top"
+                className="w-full h-full object-cover object-top"
               />
             </div>
             <div>
