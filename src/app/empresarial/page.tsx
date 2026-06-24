@@ -1,16 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 
 function countUp(el: HTMLElement, target: number, suffix: string, duration: number) {
   let start = 0;
   const step = target / (duration / 16);
   const timer = setInterval(() => {
     start += step;
-    if (start >= target) {
-      start = target;
-      clearInterval(timer);
-    }
+    if (start >= target) { start = target; clearInterval(timer); }
     if (suffix === "%") el.textContent = Math.round(start) + "%";
     else if (suffix === "$") el.textContent = "$" + Math.round(start);
     else el.textContent = Math.round(start) + "+";
@@ -57,7 +55,7 @@ export default function EmpresarialPage() {
           productivo.
         </p>
         <a
-          href="https://wa.me/14038998916"
+          href="mailto:empresas@runclubpty.com?subject=Información%20RunClub%20Empresarial"
           className="inline-flex items-center gap-2 bg-[#F16823] hover:bg-[#FF4F26] text-white px-7 py-3.5 rounded-lg text-[15px] font-semibold transition-colors"
         >
           Solicitar información →
@@ -80,45 +78,7 @@ export default function EmpresarialPage() {
         </div>
       </section>
 
-      {/* Features */}
-      <section className="px-8 py-12 border-b border-[#2a2b2d]">
-        <p className="text-xs uppercase tracking-widest text-[#707070] mb-7">
-          Lo que incluye
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[
-            {
-              title: "Planes personalizados",
-              desc: "Cada empleado recibe su plan adaptado a su nivel, tiempo y objetivos.",
-            },
-            {
-              title: "Reportes para RRHH",
-              desc: "Dashboard de asistencia, adherencia y progreso por empleado y departamento.",
-            },
-            {
-              title: "Comunidad de equipo",
-              desc: "Grupos por sede, retos internos y participación en carreras locales.",
-            },
-            {
-              title: "Coaching personalizado",
-              desc: "Tecnología de IA que actúa como coach individual para cada empleado, 24/7.",
-            },
-          ].map((item) => (
-            <div
-              key={item.title}
-              className="bg-[#1B1C1E] border border-[#2a2b2d] rounded-xl p-5"
-            >
-              <div className="w-8 h-8 bg-[#AF3F07]/20 rounded-lg flex items-center justify-center mb-3">
-                <span className="text-[#F16823] text-sm">▸</span>
-              </div>
-              <p className="text-sm font-semibold text-white mb-1.5">{item.title}</p>
-              <p className="text-xs text-[#A3A3A3] leading-relaxed">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Why */}
+      {/* Por qué funciona */}
       <section className="px-8 py-12 border-b border-[#2a2b2d]">
         <p className="text-xs uppercase tracking-widest text-[#707070] mb-7">
           Por qué funciona
@@ -154,6 +114,41 @@ export default function EmpresarialPage() {
         </div>
       </section>
 
+      {/* Qué incluye */}
+      <section className="px-8 py-12 border-b border-[#2a2b2d]">
+        <p className="text-xs uppercase tracking-widest text-[#707070] mb-7">
+          Lo que incluye
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            {
+              title: "Planes personalizados",
+              desc: "Cada empleado recibe su plan adaptado a su nivel, tiempo y objetivos.",
+            },
+            {
+              title: "Reportes para RRHH",
+              desc: "Dashboard de asistencia, adherencia y progreso por empleado y departamento.",
+            },
+            {
+              title: "Comunidad de equipo",
+              desc: "Grupos por sede, retos internos y participación en carreras locales.",
+            },
+            {
+              title: "Coaching personalizado",
+              desc: "Tecnología de IA que actúa como coach individual para cada empleado, 24 horas.",
+            },
+          ].map((item) => (
+            <div key={item.title} className="bg-[#1B1C1E] border border-[#2a2b2d] rounded-xl p-5">
+              <div className="w-8 h-8 bg-[#AF3F07]/20 rounded-lg flex items-center justify-center mb-3">
+                <span className="text-[#F16823] text-sm">▸</span>
+              </div>
+              <p className="text-sm font-semibold text-white mb-1.5">{item.title}</p>
+              <p className="text-xs text-[#A3A3A3] leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Pricing */}
       <section className="px-8 py-12 border-b border-[#2a2b2d]">
         <p className="text-xs uppercase tracking-widest text-[#707070] mb-7">
@@ -164,9 +159,7 @@ export default function EmpresarialPage() {
             <p className="text-xs text-[#707070] mb-1.5">Desde</p>
             <p className="text-3xl font-bold text-white">
               $15{" "}
-              <span className="text-sm font-normal text-[#A3A3A3]">
-                /empleado activo
-              </span>
+              <span className="text-sm font-normal text-[#A3A3A3]">/empleado activo</span>
             </p>
             <p className="text-xs text-[#707070] mt-2">Mínimo 20 empleados</p>
           </div>
@@ -179,9 +172,7 @@ export default function EmpresarialPage() {
               $750{" "}
               <span className="text-sm font-normal text-[#A3A3A3]">/mes</span>
             </p>
-            <p className="text-xs text-[#707070] mt-2">
-              Acceso completo para todo el equipo
-            </p>
+            <p className="text-xs text-[#707070] mt-2">Acceso completo para todo el equipo</p>
           </div>
         </div>
         <p className="text-[11px] text-[#404040] mt-4">
@@ -190,25 +181,38 @@ export default function EmpresarialPage() {
       </section>
 
       {/* CTA */}
-      <section className="px-8 py-16 text-center">
+      <section className="px-8 py-16 text-center border-b border-[#2a2b2d]">
         <p className="text-xl font-medium text-white mb-2">
           ¿Le interesa para su empresa?
         </p>
         <p className="text-sm text-[#A3A3A3] mb-7">
-          Agendemos una conversación de 20 minutos. Sin compromiso.
+          Escríbanos y coordinamos una conversación de 20 minutos. Sin compromiso.
         </p>
         <a
-          href="https://wa.me/14038998916"
+          href="mailto:empresas@runclubpty.com?subject=Información%20RunClub%20Empresarial"
           className="inline-flex items-center gap-2 bg-[#F16823] hover:bg-[#FF4F26] text-white px-7 py-3.5 rounded-lg text-[15px] font-semibold transition-colors"
         >
-          Escribir a Coach JJ →
+          Solicitar información →
         </a>
+      </section>
+
+      {/* Link RRHH */}
+      <section className="px-8 py-8 text-center">
+        <p className="text-xs text-[#707070]">
+          ¿Es usted parte del equipo de Gestión Humana?{" "}
+          <Link
+            href="/empresarial/features"
+            className="text-[#F16823] hover:underline"
+          >
+            Ver funcionalidades detalladas →
+          </Link>
+        </p>
       </section>
 
       {/* Footer */}
       <footer className="px-8 py-5 border-t border-[#2a2b2d] text-center">
         <p className="text-xs text-[#404040]">
-          RunClub Panamá · runclubpty.com/empresarial · Coach JJ
+          RunClub Panamá · runclubpty.com/empresarial · empresas@runclubpty.com
         </p>
       </footer>
 
