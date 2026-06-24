@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePlan } from "@/lib/hooks/usePlan";
+import { buildLeaderboardRows } from "@/lib/leaderboard";
 import { BannerAd } from "@/components/BannerAd";
 import { RunClubLogo } from "@/components/RunClubLogo";
 import { ReferralCard } from "@/components/ReferralCard";
@@ -233,6 +234,11 @@ function StatsCard({
   fullName,
   raceName,
   track,
+  myPoints,
+  myUserId,
+  myName,
+  weeklyRankChange,
+  setShowPointsModal,
 }: {
   currentWeek: number;
   totalWeeks: number;
@@ -245,6 +251,11 @@ function StatsCard({
   fullName?: string;
   raceName?: string;
   track?: string;
+  myPoints?: number;
+  myUserId?: string;
+  myName?: string;
+  weeklyRankChange?: number;
+  setShowPointsModal: (value: boolean) => void;
 }) {
   const DAYS = ["L", "M", "X", "J", "V", "S", "D"];
   const dayNames = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
@@ -287,6 +298,42 @@ function StatsCard({
             style={{ width: `${completionPercent}%` }}
           />
         </div>
+        {myPoints !== undefined && myUserId && myName && track && (
+          <div className="mt-4 pt-4 border-t border-[#2a2b2d]">
+            <div className="flex items-center gap-1.5 mb-3">
+              <span className="text-[10px] uppercase tracking-widest text-[#707070]">
+                {track === "transformacion" ? "Transformación" : "Runner Pro"} · Ranking
+              </span>
+              <button
+                onClick={() => setShowPointsModal(true)}
+                className="w-4 h-4 rounded-full border border-[#707070] flex items-center justify-center text-[#707070] text-[10px] font-bold hover:border-[#F16823] hover:text-[#F16823] transition-colors"
+              >
+                ?
+              </button>
+            </div>
+            {buildLeaderboardRows(myPoints, myUserId, myName, track, weeklyRankChange ?? 0).map((row) => (
+              <div
+                key={row.user_id}
+                className={`flex items-center gap-2 py-1.5 px-2 rounded-md ${row.isMe ? "bg-[#F16823]/5" : ""}`}
+              >
+                <span className={`text-xs font-bold min-w-[20px] ${row.isMe ? "text-[#F16823]" : "text-[#707070]"}`}>
+                  {row.rank}
+                </span>
+                <span className={`text-xs flex-1 ${row.isMe ? "text-white font-semibold" : "text-[#B8B8B8]"}`}>
+                  {row.isMe ? "Tú" : row.name}
+                </span>
+                <span className={`text-[11px] ${row.isMe ? "text-[#F16823]" : "text-[#707070]"}`}>
+                  {row.points} pts
+                </span>
+                {row.isMe && row.weeklyRankChange !== 0 && (
+                  <span className={row.weeklyRankChange > 0 ? "text-[#10B981] text-[10px]" : "text-red-400 text-[10px]"}>
+                    {row.weeklyRankChange > 0 ? "↑" : "↓"}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Métricas de la semana */}
@@ -648,7 +695,9 @@ export default function DashboardClient() {
   const router = useRouter();
   const [isPremium, setIsPremium] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
-  const [profile, setProfile] = useState<{ full_name?: string; is_verified?: boolean; trial_ends_at?: string | null; sexo?: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ id?: string; full_name?: string; is_verified?: boolean; trial_ends_at?: string | null; sexo?: string | null } | null>(null);
+  const [userPoints, setUserPoints] = useState<{ total_points?: number; weekly_rank?: number; last_week_rank?: number } | null>(null);
+  const [showPointsModal, setShowPointsModal] = useState(false);
   const [pesoInicial, setPesoInicial] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
@@ -685,7 +734,7 @@ export default function DashboardClient() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("is_premium, is_verified, full_name, trial_ends_at, sexo, is_trail_promo_dismissed")
+        .select("id, is_premium, is_verified, full_name, trial_ends_at, sexo, is_trail_promo_dismissed")
         .eq("id", user.id)
         .maybeSingle();
       if (data) {
@@ -693,6 +742,12 @@ export default function DashboardClient() {
         setIsPremium(data.is_premium ?? false);
         setIsVerified(data.is_verified ?? false);
       }
+      const { data: userPointsData } = await supabase
+        .from("user_points")
+        .select("total_points, weekly_rank, last_week_rank")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (userPointsData) setUserPoints(userPointsData);
       const { data: onboarding } = await supabase
         .from("onboarding_answers")
         .select("peso_lbs")
@@ -938,6 +993,11 @@ export default function DashboardClient() {
           fullName={profile?.full_name}
           raceName={plan?.race_name}
           track={plan?.track}
+          myPoints={userPoints?.total_points ?? 0}
+          myUserId={profile?.id ?? ""}
+          myName={profile?.full_name ?? ""}
+          weeklyRankChange={(userPoints?.last_week_rank ?? 0) - (userPoints?.weekly_rank ?? 0)}
+          setShowPointsModal={setShowPointsModal}
         />
 
         {showTrailPromo && (
@@ -1040,6 +1100,39 @@ export default function DashboardClient() {
 
         {plan && (
           <PartnerSection track={plan.track} />
+        )}
+
+        {showPointsModal && (
+          <div
+            className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowPointsModal(false)}
+          >
+            <div
+              className="bg-[#1B1C1E] border border-[#2a2b2d] rounded-2xl p-6 max-w-sm w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-5">
+                <h3 className="text-white font-semibold">¿Cómo ganas puntos?</h3>
+                <button onClick={() => setShowPointsModal(false)} className="text-[#707070] hover:text-white text-lg">✕</button>
+              </div>
+              <div className="flex flex-col gap-3">
+                {[
+                  { label: "Día completado", pts: "+10 pts" },
+                  { label: "Semana 100% completada", pts: "+50 pts" },
+                  { label: "Racha de 7 días", pts: "+30 pts" },
+                  { label: "Racha de 30 días", pts: "+100 pts" },
+                  { label: "Compartir en redes", pts: "+20 pts / semana" },
+                  { label: "Amigo referido que se registra", pts: "+75 pts" },
+                  { label: "Perfil completo", pts: "+50 pts" },
+                ].map((item) => (
+                  <div key={item.label} className="flex justify-between items-center py-2 border-b border-[#2a2b2d] last:border-0">
+                    <span className="text-sm text-[#B8B8B8]">{item.label}</span>
+                    <span className="text-sm font-semibold text-[#F16823]">{item.pts}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         )}
       </main>
 
