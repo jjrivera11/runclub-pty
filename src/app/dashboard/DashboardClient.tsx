@@ -341,7 +341,7 @@ function StatsCard({
                     {row.points}
                   </span>
                   {row.isMe && row.weeklyRankChange !== 0 && (
-                    <span className={row.weeklyRankChange > 0 ? "text-[#10B981] text-[10px]" : "text-red-400 text-[10px]"}>
+                    <span style={{ color: row.weeklyRankChange > 0 ? "#10B981" : "#ef4444", fontSize: "10px" }}>
                       {row.weeklyRankChange > 0 ? "↑" : "↓"}
                     </span>
                   )}
