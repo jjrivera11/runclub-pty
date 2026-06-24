@@ -78,6 +78,14 @@ const BENEFITS = [
   { icon: "🏁", title: "Carreras de práctica", desc: "Agrega carreras locales a tu plan. Coach JJ ajusta el tapering y la carga automáticamente." },
 ];
 
+const LEADERBOARD_PREVIEW = [
+  { pos: 1, name: "Valeria Ríos", pts: 580, arrow: "↑" },
+  { pos: 2, name: "Rodrigo Fábrega", pts: 510, arrow: "↑" },
+  { pos: 3, name: "Sofía Martínez", pts: 480, arrow: "↓" },
+  { pos: 4, name: "Tú", pts: 420, arrow: "↑", isMe: true },
+  { pos: 5, name: "Andrés Solís", pts: 390, arrow: "↓" },
+];
+
 const STEPS = [
   { n: "01", title: "Cuéntale a Coach JJ", desc: "Completa el onboarding en 3 minutos. Tu objetivo, nivel y disponibilidad." },
   { n: "02", title: "Recibe tu plan", desc: "Coach JJ genera tu plan personalizado al instante. Semana por semana." },
@@ -249,6 +257,72 @@ export default function LandingPage() {
               </motion.div>
             </FadeInSection>
           ))}
+        </div>
+      </section>
+
+      {/* Gamificación */}
+      <section className="px-6 py-24 bg-[#2a2b2d]">
+        <div className="max-w-5xl mx-auto">
+          <FadeInSection>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
+              Entrena, compite y sube en el ranking
+            </h2>
+            <p className="text-[#B8B8B8] text-center mb-12 max-w-lg mx-auto">
+              Cada sesión completada, cada semana cerrada y cada racha mantenida te da puntos. Compite con runners de Panamá y sube posiciones.
+            </p>
+          </FadeInSection>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-center max-w-3xl mx-auto">
+
+            {/* Leaderboard preview */}
+            <FadeInSection delay={0.1}>
+              <div className="rounded-2xl border border-[#707070]/40 bg-[#1B1C1E] p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-xs uppercase tracking-widest text-[#707070]">Runner Pro · Ranking</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  {LEADERBOARD_PREVIEW.map((row) => (
+                    <div
+                      key={row.pos}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg ${row.isMe ? "bg-[#F16823]/10 border border-[#F16823]/20" : ""}`}
+                    >
+                      <span className={`text-sm font-bold min-w-[20px] ${row.isMe ? "text-[#F16823]" : "text-[#707070]"}`}>
+                        {row.pos}
+                      </span>
+                      <span className={`text-sm flex-1 ${row.isMe ? "text-white font-bold" : "text-[#B8B8B8]"}`}>
+                        {row.name}
+                      </span>
+                      <span className={`text-xs ${row.isMe ? "text-[#F16823]" : "text-[#707070]"}`}>
+                        {row.pts} pts
+                      </span>
+                      <span style={{ color: row.arrow === "↑" ? "#10B981" : "#ef4444", fontSize: "11px" }}>
+                        {row.arrow}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </FadeInSection>
+
+            {/* Puntos */}
+            <FadeInSection delay={0.2}>
+              <div className="flex flex-col gap-4">
+                {[
+                  { icon: "✅", label: "Día completado", pts: "+10 pts" },
+                  { icon: "🏅", label: "Semana 100% cerrada", pts: "+50 pts" },
+                  { icon: "🔥", label: "Racha de 7 días", pts: "+30 pts" },
+                  { icon: "👥", label: "Amigo referido", pts: "+75 pts" },
+                  { icon: "📲", label: "Compartir tu logro", pts: "+20 pts" },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-center gap-3">
+                    <span className="text-xl">{item.icon}</span>
+                    <span className="text-sm text-[#B8B8B8] flex-1">{item.label}</span>
+                    <span className="text-sm font-bold text-[#F16823]">{item.pts}</span>
+                  </div>
+                ))}
+              </div>
+            </FadeInSection>
+
+          </div>
         </div>
       </section>
 
