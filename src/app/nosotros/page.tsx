@@ -59,9 +59,14 @@ export default function NosotrosPage() {
 
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-[#1B1C1E]/80 backdrop-blur-sm border-b border-[#707070]/20">
-        <button onClick={() => router.push("/landing")} className="flex items-center gap-2">
-          <img src="/logo.svg" alt="RunClub Panamá" className="h-8" />
-        </button>
+        <div className="flex items-center gap-4">
+          <button onClick={() => router.back()} className="text-sm text-[#707070] hover:text-white transition-colors">
+            ← Volver
+          </button>
+          <button onClick={() => router.push("/landing")} className="flex items-center gap-2">
+            <img src="/logo.svg" alt="RunClub Panamá" className="h-8" />
+          </button>
+        </div>
         <div className="flex items-center gap-4">
           <button onClick={() => router.push("/login")} className="text-sm text-[#B8B8B8] hover:text-white transition-colors">
             Iniciar sesión
