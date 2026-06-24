@@ -3,6 +3,7 @@ import Link from "next/link";
 export default function EmpresarialFeaturesPage() {
   return (
     <main className="min-h-screen bg-[#111111] text-white font-sans">
+      <div className="max-w-4xl mx-auto">
 
       {/* Nav */}
       <nav className="flex justify-between items-center px-8 py-5 border-b border-[#2a2b2d]">
@@ -141,6 +142,7 @@ export default function EmpresarialFeaturesPage() {
         </p>
       </footer>
 
+      </div>
     </main>
   );
 }
