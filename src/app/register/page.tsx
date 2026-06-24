@@ -78,6 +78,15 @@ export default function RegisterPage() {
             .eq("id", data.user.id);
           if (!refError) { updated = true; break; }
         }
+        if (updated && referrer) {
+          // Dar 75 pts al referidor
+          try {
+            const { logPointEvent } = await import("@/lib/points");
+            await logPointEvent(supabase, referrer.id, "referral_registered", {
+              referred_user: data.user!.id,
+            });
+          } catch {}
+        }
         if (!updated) console.error("referred_by no se pudo guardar para", data.user.id);
       }
     }
