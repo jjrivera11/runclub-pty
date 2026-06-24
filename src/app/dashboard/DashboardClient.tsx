@@ -1025,6 +1025,14 @@ export default function DashboardClient() {
                       <i className="ti ti-help-circle" style={{ fontSize: 18 }}></i>
                       Ayuda
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/nosotros"); setShowMenu(false); }}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#B8B8B8] hover:bg-[#1B1C1E] hover:text-white transition-colors"
+                    >
+                      <i className="ti ti-user" style={{ fontSize: 18 }}></i>
+                      Nosotros
+                    </button>
                     <div className="border-t border-[#707070]/30" />
                     <form action="/auth/signout" method="POST">
                       <button

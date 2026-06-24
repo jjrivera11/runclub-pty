@@ -103,6 +103,9 @@ export default function LandingPage() {
           <img src="/logo.svg" alt="RunClub Panamá" className="h-8" />
         </div>
         <div className="flex items-center gap-4">
+          <button onClick={() => router.push("/nosotros")} className="text-sm text-[#B8B8B8] hover:text-white transition-colors">
+            Nosotros
+          </button>
           <button onClick={() => router.push("/login")} className="text-sm text-[#B8B8B8] hover:text-white transition-colors">
             Iniciar sesión
           </button>
