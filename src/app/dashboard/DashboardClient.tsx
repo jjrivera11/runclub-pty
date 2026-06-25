@@ -989,6 +989,7 @@ export default function DashboardClient() {
             <div className="relative">
               <button
                 type="button"
+                data-tour="menu-btn"
                 onClick={() => setShowMenu((v) => !v)}
                 className="flex items-center gap-1.5 rounded-lg border border-[#707070]/60 bg-[#2a2b2d] px-3 py-2 text-sm text-white hover:border-[#F16823] transition-colors"
                 aria-label="Menú"

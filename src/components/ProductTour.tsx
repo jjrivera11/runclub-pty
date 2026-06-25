@@ -47,10 +47,10 @@ const TOUR_STEPS: TourStep[] = [
     position: "top",
   },
   {
-    target: "[data-tour='calendar-export']",
+    target: "[data-tour='menu-btn']",
     title: "Descarga tu plan al calendario 📲",
-    description: "Exporta todas tus sesiones directamente a Google Calendar o Apple Calendar para no olvidar ningún entrenamiento.",
-    position: "top",
+    description: "Abre el menú (arriba a la derecha) → Exportar calendario. Exporta todas tus sesiones a Google Calendar o Apple Calendar.",
+    position: "bottom",
   },
   {
     target: "[data-tour='share-card']",
@@ -65,16 +65,16 @@ const TOUR_STEPS: TourStep[] = [
     position: "top",
   },
   {
-    target: "[data-tour='pdf-export']",
+    target: "[data-tour='menu-btn']",
     title: "Exporta tu plan en PDF 📄",
-    description: "Descarga tu plan completo en PDF para tenerlo siempre disponible, aunque no tengas conexión.",
-    position: "top",
+    description: "Abre el menú (arriba a la derecha) → Exportar PDF. Descarga tu plan completo para tenerlo siempre disponible.",
+    position: "bottom",
   },
   {
-    target: "[data-tour='settings']",
-    title: "Configuración ⚙️",
-    description: "Actualiza tu perfil, zona de entrenamiento y track en cualquier momento. Los cambios aplican a tu próximo plan.",
-    position: "top",
+    target: "[data-tour='menu-btn']",
+    title: "Ayuda y configuración ⚙️",
+    description: "Abre el menú (arriba a la derecha) para acceder a Configuración, Ayuda y opciones de exportación.",
+    position: "bottom",
   },
 ];
 
