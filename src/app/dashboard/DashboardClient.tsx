@@ -17,6 +17,7 @@ import { SessionCompleteModal } from "@/components/SessionCompleteModal";
 import { PlanCompletionScreen } from "@/components/PlanCompletionScreen";
 import { TrialBanner } from "@/components/TrialBanner";
 import { CalendarExportModal } from "@/components/CalendarExportModal";
+import { ProductTour } from "@/components/ProductTour";
 import type { DayProgress, PlanDay, PlanWeek, TrainingPlan } from "@/types/plan";
 
 type WeekBadgeType =
@@ -284,6 +285,7 @@ function StatsCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Compartir mi plan"
+                data-tour="share-card"
                 className="text-[#F16823] hover:opacity-70 transition-opacity mt-1"
                 onClick={async () => {
                   if (!myUserId) return;
@@ -313,7 +315,7 @@ function StatsCard({
           </div>
 
           {/* Columna derecha — Ranking */}
-          <div className="pl-4 flex flex-col justify-center">
+          <div data-tour="leaderboard" className="pl-4 flex flex-col justify-center">
             <div className="flex items-center gap-1.5 mb-3">
               <span className="text-[10px] uppercase tracking-widest text-[#707070]">
                 {track === "transformacion" ? "Transformación" : "Runner Pro"} · Ranking
@@ -715,6 +717,7 @@ export default function DashboardClient() {
   const [profile, setProfile] = useState<{ id?: string; full_name?: string; is_verified?: boolean; trial_ends_at?: string | null; sexo?: string | null } | null>(null);
   const [userPoints, setUserPoints] = useState<{ total_points?: number; weekly_rank?: number; last_week_rank?: number } | null>(null);
   const [showPointsModal, setShowPointsModal] = useState(false);
+  const [showTour, setShowTour] = useState(false);
   const [pesoInicial, setPesoInicial] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
@@ -751,13 +754,14 @@ export default function DashboardClient() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("id, is_premium, is_verified, full_name, trial_ends_at, sexo, is_trail_promo_dismissed")
+        .select("id, is_premium, is_verified, full_name, trial_ends_at, sexo, is_trail_promo_dismissed, tour_completed")
         .eq("id", user.id)
         .maybeSingle();
       if (data) {
         setProfile(data);
         setIsPremium(data.is_premium ?? false);
         setIsVerified(data.is_verified ?? false);
+        if (!data?.tour_completed) setShowTour(true);
       }
       const { data: userPointsData } = await supabase
         .from("user_points")
@@ -924,6 +928,16 @@ export default function DashboardClient() {
     setPendingSession(null);
   }
 
+  async function handleTourComplete() {
+    setShowTour(false);
+    const { createClient } = await import("@/lib/supabase/client");
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("profiles").update({ tour_completed: true }).eq("id", user.id);
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-full bg-[#1B1C1E]">
@@ -994,6 +1008,7 @@ export default function DashboardClient() {
                   <div className="absolute right-0 top-11 z-50 w-52 rounded-xl border border-[#707070]/40 bg-[#2a2b2d] shadow-xl overflow-hidden">
                     <button
                       type="button"
+                      data-tour="pdf-export"
                       onClick={() => { handleDownloadPDF(); setShowMenu(false); }}
                       className="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#B8B8B8] hover:bg-[#1B1C1E] hover:text-white transition-colors"
                     >
@@ -1002,6 +1017,7 @@ export default function DashboardClient() {
                     </button>
                     <button
                       type="button"
+                      data-tour="calendar-export"
                       onClick={() => { setShowCalendarModal(true); setShowMenu(false); }}
                       className="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#B8B8B8] hover:bg-[#1B1C1E] hover:text-white transition-colors"
                     >
@@ -1011,6 +1027,7 @@ export default function DashboardClient() {
                     <div className="border-t border-[#707070]/30" />
                     <button
                       type="button"
+                      data-tour="settings"
                       onClick={() => { router.push("/settings"); setShowMenu(false); }}
                       className="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#B8B8B8] hover:bg-[#1B1C1E] hover:text-white transition-colors"
                     >
@@ -1067,6 +1084,7 @@ export default function DashboardClient() {
             )}
           </div>
         )}
+        <div data-tour="progress-card">
         <StatsCard
           currentWeek={currentWeek}
           totalWeeks={totalWeeks}
@@ -1085,6 +1103,7 @@ export default function DashboardClient() {
           weeklyRankChange={(userPoints?.last_week_rank ?? 0) - (userPoints?.weekly_rank ?? 0)}
           setShowPointsModal={setShowPointsModal}
         />
+        </div>
 
         {showTrailPromo && (
           <TrailPromoBanner onDismiss={async () => {
@@ -1128,7 +1147,7 @@ export default function DashboardClient() {
               </button>
             )}
           </div>
-          <div className="no-print">
+          <div className="no-print" data-tour="week-pills">
             <WeekPills
               weeks={weeks}
               selectedWeek={activeSelectedWeek}
@@ -1142,6 +1161,7 @@ export default function DashboardClient() {
         </div>
 
         {selectedWeekData && (
+          <div data-tour="week-card">
           <WeekCard
             week={selectedWeekData}
             progress={progress}
@@ -1152,6 +1172,7 @@ export default function DashboardClient() {
                 : undefined
             }
           />
+          </div>
         )}
 
         {selectedWeekData && plan && (
@@ -1172,6 +1193,7 @@ export default function DashboardClient() {
           />
         )}
 
+        <div data-tour="panama-context">
         <PanamaContext
           currentWeek={currentWeek}
           totalWeeks={totalWeeks}
@@ -1179,8 +1201,11 @@ export default function DashboardClient() {
           raceDate={plan.race_date}
           raceName={plan.race_name}
         />
+        </div>
 
+        <div data-tour="referral">
         <ReferralCard />
+        </div>
 
         <PartnerIncomingRequests />
 
@@ -1265,6 +1290,8 @@ export default function DashboardClient() {
           onDismiss={() => setShowCelebration(false)}
         />
       )}
+
+      {showTour && <ProductTour onComplete={handleTourComplete} />}
 
     </div>
   );
