@@ -1052,15 +1052,19 @@ export default function DashboardClient() {
                       Nosotros
                     </button>
                     <div className="border-t border-[#707070]/30" />
-                    <form action="/auth/signout" method="POST">
-                      <button
-                        type="submit"
-                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-[#1B1C1E] transition-colors"
-                      >
-                        <i className="ti ti-logout" style={{ fontSize: 18 }}></i>
-                        Cerrar sesión
-                      </button>
-                    </form>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const { createClient } = await import("@/lib/supabase/client");
+                        const supabase = createClient();
+                        await supabase.auth.signOut();
+                        router.push("/login");
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-[#1B1C1E] transition-colors"
+                    >
+                      <i className="ti ti-logout" style={{ fontSize: 18 }}></i>
+                      Cerrar sesión
+                    </button>
                   </div>
                 </>
               )}
