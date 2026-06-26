@@ -4,30 +4,16 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
+  const type = searchParams.get("type");
 
   if (code) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (!error) {
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (user) {
-        const { data: plan } = await supabase
-          .from("training_plans")
-          .select("id")
-          .eq("user_id", user.id)
-          .eq("is_active", true)
-          .maybeSingle();
-
-        if (plan) {
-          return NextResponse.redirect(`${origin}/dashboard`);
-        } else {
-          return NextResponse.redirect(`${origin}/onboarding`);
-        }
-      }
+    await supabase.auth.exchangeCodeForSession(code);
+    
+    if (type === "recovery") {
+      return NextResponse.redirect(`${origin}/reset-password`);
     }
   }
 
-  return NextResponse.redirect(`${origin}/login`);
+  return NextResponse.redirect(`${origin}/landing`);
 }
