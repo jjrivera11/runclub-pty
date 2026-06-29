@@ -161,25 +161,6 @@ function getSessionDate(
   return sessionDate;
 }
 
-async function handleDownloadPDF() {
-  try {
-    const response = await fetch("/api/export-pdf");
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      throw new Error(data.detail ?? "Error del servidor");
-    }
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `plan-runclub-${new Date().toISOString().split("T")[0]}.pdf`;
-    link.click();
-    URL.revokeObjectURL(url);
-  } catch (e) {
-    alert("No se pudo generar el PDF: " + (e instanceof Error ? e.message : String(e)));
-  }
-}
-
 function handleExportCalendar(plan: TrainingPlan, horarioEntrenamiento: string) {
   const events: string[] = [];
 
@@ -748,6 +729,7 @@ export default function DashboardClient() {
   const [userPoints, setUserPoints] = useState<{ total_points?: number; weekly_rank?: number; last_week_rank?: number } | null>(null);
   const [showPointsModal, setShowPointsModal] = useState(false);
   const [showTour, setShowTour] = useState(false);
+  const [toastError, setToastError] = useState<string | null>(null);
   const [pesoInicial, setPesoInicial] = useState(0);
   const [horarioEntrenamiento, setHorarioEntrenamiento] = useState<string>("mañana");
   const [showCelebration, setShowCelebration] = useState(false);
@@ -967,6 +949,25 @@ export default function DashboardClient() {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       await supabase.from("profiles").update({ tour_completed: true }).eq("id", user.id);
+    }
+  }
+
+  async function handleDownloadPDF() {
+    try {
+      const response = await fetch("/api/export-pdf");
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.detail ?? "Error del servidor");
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `plan-runclub-${new Date().toISOString().split("T")[0]}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setToastError("No se pudo generar el PDF. Intenta de nuevo.");
     }
   }
 
@@ -1327,6 +1328,22 @@ export default function DashboardClient() {
           fullName={profile?.full_name}
           onDismiss={() => setShowCelebration(false)}
         />
+      )}
+
+      {toastError && (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="fixed bottom-6 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-lg border border-red-500/30 bg-[#2a2b2d] px-5 py-4 text-center text-red-400 shadow-lg"
+        >
+          {toastError}
+          <button
+            onClick={() => setToastError(null)}
+            className="ml-3 text-xs text-[#707070] hover:text-white"
+          >
+            ✕
+          </button>
+        </div>
       )}
 
       {showTour && <ProductTour onComplete={handleTourComplete} />}
