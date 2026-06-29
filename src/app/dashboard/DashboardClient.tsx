@@ -545,7 +545,7 @@ function DayRow({
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-xs text-[#B8B8B8]">{day.dia}</p>
-          <p className={`font-medium ${completed ? "text-[#B8B8B8] line-through decoration-[#F16823]/50" : "text-white"}`}>{day.titulo}</p>
+          <p className={`font-medium ${completed ? "text-[#B8B8B8]" : "text-white"}`}>{day.titulo}</p>
           <div className="flex items-center gap-2 flex-wrap">
             {day.tipo_sesion === "Test" && (
               <span className="rounded-full bg-purple-600/20 border border-purple-500/40 px-2 py-0.5 text-xs font-semibold text-purple-400">
