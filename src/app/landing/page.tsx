@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { CoachJJChat } from "@/components/CoachJJChat";
 
@@ -101,7 +102,13 @@ export default function LandingPage() {
     <main className="min-h-screen bg-[#1B1C1E] overflow-x-hidden">
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-[#1B1C1E]/80 backdrop-blur-sm border-b border-[#707070]/20">
         <div className="flex items-center gap-2">
-          <img src="/logo.svg" alt="RunClub Panamá" className="h-8" />
+          <Image
+            src="/logo.svg"
+            alt="RunClub Panamá"
+            width={32}
+            height={32}
+            className="h-8 w-auto"
+          />
         </div>
         <div className="flex items-center gap-4">
           <button onClick={() => router.push("/nosotros")} className="text-sm text-[#B8B8B8] hover:text-white transition-colors">
@@ -157,7 +164,14 @@ export default function LandingPage() {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="mb-8"
           >
-            <img src="/logo.svg" alt="RunClub Panamá" className="h-20 sm:h-28 mx-auto" />
+            <Image
+              src="/logo.svg"
+              alt="RunClub Panamá"
+              width={160}
+              height={112}
+              priority
+              className="h-20 sm:h-28 mx-auto w-auto"
+            />
           </motion.div>
 
           <motion.div
