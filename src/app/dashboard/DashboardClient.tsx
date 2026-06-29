@@ -500,11 +500,13 @@ function DayRow({
   day,
   completed,
   onToggle,
+  horario,
 }: {
   weekNumber: number;
   day: PlanDay;
   completed: boolean;
   onToggle: () => void;
+  horario?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -571,6 +573,9 @@ function DayRow({
               {day.tipo_sesion !== "Test" ? day.tipo_sesion : ""}
               {day.distancia_km ? ` · ${day.distancia_km} km` : ""}
               {day.duracion_min ? ` · ${day.duracion_min} min` : ""}
+              <span className="text-[#F16823] ml-1">
+                · {horario === "noche" ? "7:00 pm" : "5:30 am"}
+              </span>
             </p>
           </div>
         </div>
@@ -612,11 +617,13 @@ function WeekCard({
   progress,
   onToggleDay,
   shareUrl,
+  horario,
 }: {
   week: PlanWeek;
   progress: DayProgress[];
   onToggleDay: (weekNumber: number, dayName: string) => void;
   shareUrl?: string;
+  horario?: string;
 }) {
   const badgeType = week.tipo as WeekBadgeType;
   const badgeStyle =
@@ -660,6 +667,7 @@ function WeekCard({
             day={day}
             completed={isDayCompleted(week.numero, day.dia, progress)}
             onToggle={() => onToggleDay(week.numero, day.dia)}
+            horario={horario}
           />
         ))}
       </div>
@@ -1195,6 +1203,7 @@ export default function DashboardClient() {
             week={selectedWeekData}
             progress={progress}
             onToggleDay={handleToggleDay}
+            horario={horarioEntrenamiento}
             shareUrl={
               plan && isWeekComplete(selectedWeekData, progress)
                 ? `/api/share-card?type=week&name=${encodeURIComponent(profile?.full_name ?? "Atleta")}&race=${encodeURIComponent(plan.race_name ?? "")}&weeks=${totalWeeks}&streak=${streak}&track=${plan.track}&week=${selectedWeekData.numero}&km=${getWeekVolumeCompleted(selectedWeekData, progress).toFixed(1)}&pct=${completionPercent}`
