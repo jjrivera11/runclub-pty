@@ -123,9 +123,9 @@ function formatIcsDate(date: Date): string {
 function getSessionDate(
   generatedAt: string,
   weekNumber: number,
-  dayName: string
+  dayName: string,
+  horario?: string
 ): Date {
-  // Convertir a hora de Panamá (UTC-5)
   const planStart = new Date(generatedAt);
   const panamaTz = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/Panama",
@@ -141,8 +141,7 @@ function getSessionDate(
     `${parts.year}-${parts.month}-${parts.day}T08:00:00`
   );
 
-  const dayOfWeek = localDate.getDay(); // 0=domingo, 1=lunes...
-  // Si es lunes, empieza ese lunes. Cualquier otro día → lunes siguiente.
+  const dayOfWeek = localDate.getDay();
   const mondayOffset = dayOfWeek === 1 ? 0 : dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
 
   const monday = new Date(localDate);
@@ -151,7 +150,14 @@ function getSessionDate(
   const offset = DAY_OFFSET[dayName] ?? 0;
   const sessionDate = new Date(monday);
   sessionDate.setDate(monday.getDate() + (weekNumber - 1) * 7 + offset);
-  sessionDate.setHours(8, 0, 0, 0);
+
+  // Aplicar hora según preferencia
+  if (horario === "noche") {
+    sessionDate.setHours(19, 0, 0, 0);
+  } else {
+    sessionDate.setHours(5, 30, 0, 0); // mañana por defecto
+  }
+
   return sessionDate;
 }
 
@@ -174,12 +180,12 @@ async function handleDownloadPDF() {
   }
 }
 
-function handleExportCalendar(plan: TrainingPlan) {
+function handleExportCalendar(plan: TrainingPlan, horarioEntrenamiento: string) {
   const events: string[] = [];
 
   for (const week of plan.plan_json.semanas) {
     for (const day of week.dias) {
-      const start = getSessionDate(plan.generated_at, week.numero, day.dia);
+      const start = getSessionDate(plan.generated_at, week.numero, day.dia, horarioEntrenamiento);
       const duration = day.duracion_min ?? 60;
       const description = [day.descripcion, day.notas_locales]
         .filter(Boolean)
@@ -735,6 +741,7 @@ export default function DashboardClient() {
   const [showPointsModal, setShowPointsModal] = useState(false);
   const [showTour, setShowTour] = useState(false);
   const [pesoInicial, setPesoInicial] = useState(0);
+  const [horarioEntrenamiento, setHorarioEntrenamiento] = useState<string>("mañana");
   const [showCelebration, setShowCelebration] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [showTrailPromo, setShowTrailPromo] = useState(false);
@@ -787,10 +794,11 @@ export default function DashboardClient() {
       if (userPointsData) setUserPoints(userPointsData);
       const { data: onboarding } = await supabase
         .from("onboarding_answers")
-        .select("peso_lbs")
+        .select("peso_lbs, horario_entrenamiento")
         .eq("user_id", user.id)
         .maybeSingle();
       if (onboarding?.peso_lbs) setPesoInicial(onboarding.peso_lbs);
+      if (onboarding?.horario_entrenamiento) setHorarioEntrenamiento(onboarding.horario_entrenamiento);
       if (data?.is_premium !== undefined) setIsPremium(data.is_premium ?? false);
       if (data?.is_verified !== undefined) setIsVerified(data.is_verified ?? false);
       if (plan?.completion_celebrated === false && completionPercent === 100) {
@@ -1271,7 +1279,7 @@ export default function DashboardClient() {
       {showCalendarModal && plan && (
         <CalendarExportModal
           onClose={() => setShowCalendarModal(false)}
-          onDownload={() => handleExportCalendar(plan)}
+          onDownload={() => handleExportCalendar(plan, horarioEntrenamiento)}
         />
       )}
 
