@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CoachJJChat } from "@/components/CoachJJChat";
 
@@ -106,12 +107,12 @@ export default function LandingPage() {
           <button onClick={() => router.push("/nosotros")} className="text-sm text-[#B8B8B8] hover:text-white transition-colors">
             Nosotros
           </button>
-          <button onClick={() => router.push("/login")} className="text-sm text-[#B8B8B8] hover:text-white transition-colors">
+          <Link href="/login" className="text-sm text-[#B8B8B8] hover:text-white transition-colors">
             Iniciar sesión
-          </button>
-          <button onClick={() => router.push("/register")} className="rounded-lg bg-[#F16823] px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
+          </Link>
+          <Link href="/register" className="rounded-lg bg-[#F16823] px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
             Empieza gratis
-          </button>
+          </Link>
         </div>
       </nav>
 

@@ -36,9 +36,9 @@ export default function EmpresarialPage() {
       {/* Nav */}
       <nav className="flex justify-between items-center px-8 py-5 border-b border-[#2a2b2d]">
         <span className="text-sm font-bold tracking-wide">RunClub Panamá</span>
-        <a href="/nosotros" className="text-sm text-[#707070] hover:text-white transition-colors">
+        <Link href="/nosotros" className="text-sm text-[#707070] hover:text-white transition-colors">
           Nosotros
-        </a>
+        </Link>
         <span className="bg-[#F16823] text-white text-xs font-bold px-3 py-1 rounded">
           Empresarial
         </span>

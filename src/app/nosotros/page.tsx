@@ -1,6 +1,7 @@
 "use client";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 function FadeInSection({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
@@ -59,21 +60,19 @@ export default function NosotrosPage() {
 
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-[#1B1C1E]/80 backdrop-blur-sm border-b border-[#707070]/20">
+        <Link href="/landing" className="flex items-center gap-2">
+          <img src="/logo.svg" alt="RunClub Panamá" className="h-8" />
+        </Link>
         <div className="flex items-center gap-4">
           <button onClick={() => router.back()} className="text-sm text-[#707070] hover:text-white transition-colors">
             ← Volver
           </button>
-          <button onClick={() => router.push("/landing")} className="flex items-center gap-2">
-            <img src="/logo.svg" alt="RunClub Panamá" className="h-8" />
-          </button>
-        </div>
-        <div className="flex items-center gap-4">
-          <button onClick={() => router.push("/login")} className="text-sm text-[#B8B8B8] hover:text-white transition-colors">
+          <Link href="/login" className="text-sm text-[#B8B8B8] hover:text-white transition-colors">
             Iniciar sesión
-          </button>
-          <button onClick={() => router.push("/register")} className="rounded-lg bg-[#F16823] px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
+          </Link>
+          <Link href="/register" className="rounded-lg bg-[#F16823] px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
             Empieza gratis
-          </button>
+          </Link>
         </div>
       </nav>
 
