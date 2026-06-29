@@ -21,12 +21,23 @@ export default function EmpresarialPage() {
   const s3 = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (s1.current) countUp(s1.current, 20, "+", 800);
-      if (s2.current) countUp(s2.current, 27, "%", 1000);
-      if (s3.current) countUp(s3.current, 15, "$", 600);
-    }, 400);
-    return () => clearTimeout(timeout);
+    const statsEl = document.querySelector("[data-stats-section]");
+    if (!statsEl) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          if (s1.current) countUp(s1.current, 20, "+", 800);
+          if (s2.current) countUp(s2.current, 27, "%", 1000);
+          if (s3.current) countUp(s3.current, 15, "$", 600);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(statsEl);
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -66,7 +77,7 @@ export default function EmpresarialPage() {
         </a>
 
         {/* Stats */}
-        <div className="flex gap-0 mt-12 pt-8 border-t border-[#2a2b2d]">
+        <div className="flex gap-0 mt-12 pt-8 border-t border-[#2a2b2d]" data-stats-section>
           <div className="flex-1 pr-8">
             <span ref={s1} className="text-3xl font-bold text-[#F16823]">0+</span>
             <p className="text-xs text-[#707070] mt-1">Empleados mínimo</p>
