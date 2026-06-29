@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -82,8 +82,20 @@ export default function SettingsClient({ userId, email, profile, subscription }:
   const [tallaZapatillas, setTallaZapatillas] = useState(profile?.talla_zapatillas ?? "");
   const [tallaCamiseta, setTallaCamiseta] = useState(profile?.talla_camiseta ?? "");
   const [zonaEntrenamiento, setZonaEntrenamiento] = useState<string | null>(profile?.zona_entrenamiento ?? null);
+  const [horario, setHorario] = useState<string>("mañana");
 
-  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  useEffect(() => {
+    async function loadHorario() {
+      const supabase = createClient();
+      const { data: onboarding } = await supabase
+        .from("onboarding_answers")
+        .select("horario_entrenamiento")
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (onboarding?.horario_entrenamiento) setHorario(onboarding.horario_entrenamiento);
+    }
+    loadHorario();
+  }, [userId]);(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) { setError("La foto debe pesar menos de 2MB."); return; }
@@ -303,6 +315,44 @@ export default function SettingsClient({ userId, email, profile, subscription }:
             ))}
           </select>
         </Section>
+
+        {/* Horario de entrenamiento */}
+        <div className="rounded-xl border border-[#707070]/40 bg-[#2a2b2d] p-5">
+          <h3 className="text-sm font-semibold text-white mb-1">Horario de entrenamiento</h3>
+          <p className="text-xs text-[#707070] mb-4">¿A qué hora prefieres entrenar?</p>
+          <div className="flex gap-3">
+            {[
+              { label: "Mañana", value: "mañana", desc: "5:30 am" },
+              { label: "Noche", value: "noche", desc: "7:00 pm" },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={async () => {
+                  setHorario(option.value);
+                  const { createClient } = await import("@/lib/supabase/client");
+                  const supabase = createClient();
+                  const { data: { user } } = await supabase.auth.getUser();
+                  if (user) {
+                    await supabase
+                      .from("onboarding_answers")
+                      .update({ horario_entrenamiento: option.value })
+                      .eq("user_id", user.id);
+                  }
+                }}
+                className={`flex-1 rounded-lg border px-4 py-3 text-center transition-colors ${
+                  horario === option.value
+                    ? "border-[#F16823] bg-[#F16823]/10 text-[#F16823]"
+                    : "border-[#707070]/40 text-[#B8B8B8] hover:border-[#F16823]/50"
+                }`}
+              >
+                <p className="text-sm font-semibold">{option.label}</p>
+                <p className="text-xs opacity-70">{option.desc}</p>
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-[#707070] mt-3">El cambio aplica al exportar el calendario.</p>
+        </div>
 
         <Section title="Mi plan" description="Tu programa de entrenamiento actual.">
           <div className="space-y-3">
