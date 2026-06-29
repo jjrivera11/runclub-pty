@@ -127,8 +127,9 @@ function getSessionDate(
 ): Date {
   const planStart = new Date(generatedAt);
   planStart.setHours(8, 0, 0, 0);
-  const dayOfWeek = planStart.getDay();
-  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const dayOfWeek = planStart.getDay(); // 0=domingo, 1=lunes...
+  // Siempre ir al próximo lunes (o quedarse en lunes si ya es lunes)
+  const mondayOffset = dayOfWeek === 0 ? 1 : dayOfWeek === 1 ? 0 : 8 - dayOfWeek;
   const monday = new Date(planStart);
   monday.setDate(planStart.getDate() + mondayOffset);
 
