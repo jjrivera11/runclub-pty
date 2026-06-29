@@ -66,6 +66,14 @@ const FAQ = [
         q: "¿Dónde encuentro las rutas de entrenamiento?",
         a: "Coach JJ menciona rutas específicas de tu ciudad en las notas de cada sesión. Tenemos más de 56 rutas verificadas en 12 ciudades de Panamá — desde Ciudad de Panamá hasta Bocas del Toro.",
       },
+      {
+        q: "¿Cómo cambio mi horario de entrenamiento?",
+        a: "Ve a Configuración → Horario de entrenamiento. Puedes elegir entre Mañana (5:30 am) o Noche (7:00 pm). El cambio aplica inmediatamente en tu dashboard y en la exportación al calendario.",
+      },
+      {
+        q: "¿Cómo comparto mis logros en redes sociales?",
+        a: "En tu dashboard encontrarás el ícono de compartir (naranja) en la esquina superior del card de progreso. Al hacer clic genera una tarjeta personalizada con tu nombre, carrera y estadísticas lista para compartir en Instagram o WhatsApp. También puedes compartir cuando completas una semana o terminas tu plan.",
+      },
     ],
   },
   {
@@ -99,6 +107,32 @@ const FAQ = [
       {
         q: "¿Por qué Coach JJ en vez de ChatGPT?",
         a: "ChatGPT te da planes genéricos sin memoria ni adaptación. Coach JJ sabe que entrenaste el martes, que tienes una carrera el 5 de julio en la Cinta Costera, y que la semana pasada te costó el rodaje largo. Todo eso importa para un plan real.",
+      },
+    ],
+  },
+  {
+    category: "Ranking y puntos",
+    items: [
+      {
+        q: "¿Cómo funciona el sistema de puntos?",
+        a: "Ganas puntos por cada acción dentro de la app: completar un día (10 pts), cerrar una semana al 100% (50 pts), mantener una racha de 7 días (30 pts), racha de 30 días (100 pts), compartir en redes (20 pts/semana), referir un amigo que se registra (75 pts) y completar tu perfil (50 pts). Toca el ícono ? junto al ranking para verlo en cualquier momento.",
+      },
+      {
+        q: "¿Qué es el ranking y cómo subo posiciones?",
+        a: "El ranking muestra tu posición entre los runners de tu track (Runner Pro o Transformación). Ves al corredor que tienes encima y al que tienes debajo. Las flechas indican si subiste o bajaste esta semana. El ranking se actualiza diariamente.",
+      },
+      {
+        q: "¿Cómo refiero a un amigo?",
+        a: "En tu dashboard, en la sección de Referidos, copia tu link personal y compártelo. Cuando un amigo se registra con tu link, recibes 75 puntos automáticamente y un 20% de descuento en tu próximo mes.",
+      },
+    ],
+  },
+  {
+    category: "Tour y onboarding",
+    items: [
+      {
+        q: "¿Cómo veo el tour de la app de nuevo?",
+        a: "El tour se muestra automáticamente la primera vez que entras al dashboard. Si quieres verlo de nuevo, escríbenos por WhatsApp y lo activamos para tu cuenta.",
       },
     ],
   },
