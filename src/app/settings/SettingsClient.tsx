@@ -95,7 +95,9 @@ export default function SettingsClient({ userId, email, profile, subscription }:
       if (onboarding?.horario_entrenamiento) setHorario(onboarding.horario_entrenamiento);
     }
     loadHorario();
-  }, [userId]);(e: React.ChangeEvent<HTMLInputElement>) {
+  }, [userId]);
+
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) { setError("La foto debe pesar menos de 2MB."); return; }
