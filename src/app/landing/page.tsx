@@ -166,19 +166,19 @@ export default function LandingPage() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mb-4"
           >
-            <div className="flex items-center justify-center mb-2">
+            <h1 className="flex items-center justify-center mb-2">
               <span className="text-4xl sm:text-6xl font-black leading-tight">
                 <TypewriterText />
               </span>
-            </div>
-            <motion.h1
+            </h1>
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
               className="text-2xl sm:text-3xl font-bold text-white/70 leading-tight mt-6 tracking-wide"
             >
               Con Coach JJ en Panamá.
-            </motion.h1>
+            </motion.p>
           </motion.div>
 
           <motion.p
