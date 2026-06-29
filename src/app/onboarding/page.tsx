@@ -422,7 +422,6 @@ function OnboardingPageInner() {
 
   function handleNext() {
     setError(null);
-    console.log("handleNext step:", step, "track:", track, "edad:", edad, "sexo:", sexo, "canProceed:", canProceed());
     if (!canProceed()) {
       setError("Completa este paso antes de continuar.");
       return;
@@ -484,8 +483,6 @@ function OnboardingPageInner() {
       peso_a_perder: pesoAPerder,
     };
 
-    console.log("onboarding_answers upsert payload:", payload);
-
     const { error: upsertError } = await supabase
       .from("onboarding_answers")
       .upsert(payload, { onConflict: "user_id" });
@@ -517,7 +514,6 @@ function OnboardingPageInner() {
       return;
     }
 
-    console.log("onboarding complete, redirecting to /generating");
     router.push(`/generating?track=${track}`);
     router.refresh();
   }
