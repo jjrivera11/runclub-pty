@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { X } from "lucide-react";
+import FocusTrap from "focus-trap-react";
 import { usePlan } from "@/lib/hooks/usePlan";
 import { buildLeaderboardRows } from "@/lib/leaderboard";
 import { BannerAd } from "@/components/BannerAd";
@@ -1260,16 +1261,26 @@ export default function DashboardClient() {
         )}
 
         {showPointsModal && (
-          <div
-            className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
-            onClick={() => setShowPointsModal(false)}
+          <FocusTrap
+            focusTrapOptions={{
+              onDeactivate: () => setShowPointsModal(false),
+              clickOutsideDeactivates: true,
+              returnFocusOnDeactivate: true,
+            }}
           >
             <div
-              className="bg-[#1B1C1E] border border-[#2a2b2d] rounded-2xl p-6 max-w-sm w-full"
-              onClick={(e) => e.stopPropagation()}
+              className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+              onClick={() => setShowPointsModal(false)}
             >
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="points-modal-title"
+                className="bg-[#1B1C1E] border border-[#2a2b2d] rounded-2xl p-6 max-w-sm w-full"
+                onClick={(e) => e.stopPropagation()}
+              >
               <div className="flex justify-between items-center mb-5">
-                <h3 className="text-white font-semibold">¿Cómo ganas puntos?</h3>
+                <h3 id="points-modal-title" className="text-white font-semibold">¿Cómo ganas puntos?</h3>
                 <button onClick={() => setShowPointsModal(false)} aria-label="Cerrar" className="text-[#707070] hover:text-white transition-colors">
                   <X size={18} />
                 </button>
@@ -1292,6 +1303,7 @@ export default function DashboardClient() {
               </div>
             </div>
           </div>
+          </FocusTrap>
         )}
       </main>
 
