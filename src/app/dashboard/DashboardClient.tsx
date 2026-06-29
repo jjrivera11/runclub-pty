@@ -670,7 +670,11 @@ function CelebrationToast({
   }, [onDismiss]);
 
   return (
-    <div className="fixed bottom-6 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-lg border border-[#F16823] bg-[#2a2b2d] px-5 py-4 text-center text-white shadow-lg">
+    <div
+      role="alert"
+      aria-live="polite"
+      className="fixed bottom-6 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-lg border border-[#F16823] bg-[#2a2b2d] px-5 py-4 text-center text-white shadow-lg"
+    >
       🎉 ¡Semana {weekNumber} completada! Eres increíble.
     </div>
   );
