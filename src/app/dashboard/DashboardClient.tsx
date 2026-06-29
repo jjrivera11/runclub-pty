@@ -456,7 +456,7 @@ function WeekPills({
             key={week.numero}
             type="button"
             onClick={() => onSelect(week.numero)}
-            className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-medium transition-colors ${pillClass}`}
+            className={`flex h-11 w-11 items-center justify-center rounded-full border text-sm font-medium transition-colors ${pillClass}`}
             aria-label={`Semana ${week.numero}`}
           >
             {complete ? "✓" : week.numero}
@@ -466,7 +466,7 @@ function WeekPills({
       {lockedWeeks.map((n) => (
         <div
           key={`locked-${n}`}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-[#707070]/15 bg-[#1B1C1E]/50 cursor-not-allowed"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-[#707070]/15 bg-[#1B1C1E]/50 cursor-not-allowed"
           title={`Semana ${n} — se generará pronto`}
         >
           <span className="text-[#707070]/20 text-xs">🔒</span>
