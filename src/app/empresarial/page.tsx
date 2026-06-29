@@ -179,7 +179,7 @@ export default function EmpresarialPage() {
             <p className="text-xs text-[#707070] mt-2">Acceso completo para todo el equipo</p>
           </div>
         </div>
-        <p className="text-[11px] text-[#404040] mt-4">
+        <p className="text-[11px] text-[#707070] mt-4">
           * Dato referencial basado en estudios de programas de bienestar corporativo.
         </p>
       </section>
@@ -215,7 +215,7 @@ export default function EmpresarialPage() {
 
       {/* Footer */}
       <footer className="px-8 py-5 border-t border-[#2a2b2d] text-center">
-        <p className="text-xs text-[#404040]">
+        <p className="text-xs text-[#707070]">
           RunClub Panamá · runclubpty.com/empresarial · empresas@runclubpty.com
         </p>
       </footer>

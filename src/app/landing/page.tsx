@@ -230,7 +230,7 @@ export default function LandingPage() {
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
-            className="text-[#B8B8B8]/30 text-2xl"
+            className="text-[#B8B8B8]/60 text-2xl"
           >
             ↓
           </motion.div>

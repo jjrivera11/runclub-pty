@@ -137,7 +137,7 @@ export default function EmpresarialFeaturesPage() {
 
       {/* Footer */}
       <footer className="px-8 py-5 border-t border-[#2a2b2d] text-center">
-        <p className="text-xs text-[#404040]">
+        <p className="text-xs text-[#707070]">
           RunClub Panamá · runclubpty.com/empresarial · empresas@runclubpty.com
         </p>
       </footer>
