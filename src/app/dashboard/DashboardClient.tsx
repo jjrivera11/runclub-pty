@@ -125,13 +125,28 @@ function getSessionDate(
   weekNumber: number,
   dayName: string
 ): Date {
+  // Convertir a hora de Panamá (UTC-5)
   const planStart = new Date(generatedAt);
-  planStart.setHours(8, 0, 0, 0);
-  const dayOfWeek = planStart.getDay(); // 0=domingo, 1=lunes...
-  // Siempre ir al próximo lunes (o quedarse en lunes si ya es lunes)
-  const mondayOffset = dayOfWeek === 0 ? 1 : dayOfWeek === 1 ? 0 : 8 - dayOfWeek;
-  const monday = new Date(planStart);
-  monday.setDate(planStart.getDate() + mondayOffset);
+  const panamaTz = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Panama",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hour12: false,
+  }).formatToParts(planStart);
+
+  const parts: Record<string, string> = {};
+  panamaTz.forEach(({ type, value }) => { parts[type] = value; });
+
+  const localDate = new Date(
+    `${parts.year}-${parts.month}-${parts.day}T08:00:00`
+  );
+
+  const dayOfWeek = localDate.getDay(); // 0=domingo, 1=lunes...
+  // Si es lunes, empieza ese lunes. Cualquier otro día → lunes siguiente.
+  const mondayOffset = dayOfWeek === 1 ? 0 : dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
+
+  const monday = new Date(localDate);
+  monday.setDate(localDate.getDate() + mondayOffset);
 
   const offset = DAY_OFFSET[dayName] ?? 0;
   const sessionDate = new Date(monday);
