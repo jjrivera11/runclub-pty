@@ -41,6 +41,19 @@ function GeneratingPageInner() {
   const [retrying, setRetrying] = useState(false);
   const hasStarted = useRef(false);
 
+  // Bloquear navegación mientras se genera el plan
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (pct < 100) {
+        e.preventDefault();
+        e.returnValue = "Tu plan se está generando. ¿Seguro que quieres salir?";
+        return e.returnValue;
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [pct]);
+
   const generatePlan = useCallback(async () => {
     setError(null);
     setRetrying(true);
@@ -157,6 +170,15 @@ function GeneratingPageInner() {
         <br />
         Esto toma aproximadamente 90 segundos.
       </p>
+
+      {pct < 100 && (
+        <div className="mt-4 flex items-center gap-2 rounded-lg border border-[#F16823]/30 bg-[#F16823]/10 px-4 py-3 max-w-xs">
+          <span className="text-sm">⚠️</span>
+          <p className="text-xs text-[#F16823]">
+            No cierres esta página mientras se genera tu plan.
+          </p>
+        </div>
+      )}
 
       <div className="mt-8 w-full max-w-sm">
         <BannerAd placement="generating" isPremium={false} />
