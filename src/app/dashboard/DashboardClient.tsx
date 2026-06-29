@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { X } from "lucide-react";
 import { usePlan } from "@/lib/hooks/usePlan";
 import { buildLeaderboardRows } from "@/lib/leaderboard";
 import { BannerAd } from "@/components/BannerAd";
@@ -706,7 +707,9 @@ function TrailPromoBanner({ onDismiss }: { onDismiss: () => void }) {
   const router = useRouter();
   return (
     <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-4 relative">
-      <button onClick={onDismiss} className="absolute top-3 right-3 text-[#707070] hover:text-white text-sm">✕</button>
+      <button onClick={onDismiss} aria-label="Cerrar" className="absolute top-3 right-3 text-[#707070] hover:text-white transition-colors">
+        <X size={16} />
+      </button>
       <p className="text-sm font-semibold text-white mb-1">🏔️ ¿Listo para el siguiente reto?</p>
       <p className="text-xs text-[#B8B8B8] mb-3 leading-relaxed">
         Completaste tu carrera. El trail running es una experiencia completamente diferente — montaña, naturaleza y un reto mayor. Hay carreras trail en Panamá perfectas para empezar.
@@ -1263,7 +1266,9 @@ export default function DashboardClient() {
             >
               <div className="flex justify-between items-center mb-5">
                 <h3 className="text-white font-semibold">¿Cómo ganas puntos?</h3>
-                <button onClick={() => setShowPointsModal(false)} className="text-[#707070] hover:text-white text-lg">✕</button>
+                <button onClick={() => setShowPointsModal(false)} aria-label="Cerrar" className="text-[#707070] hover:text-white transition-colors">
+                  <X size={18} />
+                </button>
               </div>
               <div className="flex flex-col gap-3">
                 {[
@@ -1339,9 +1344,10 @@ export default function DashboardClient() {
           {toastError}
           <button
             onClick={() => setToastError(null)}
-            className="ml-3 text-xs text-[#707070] hover:text-white"
+            aria-label="Cerrar"
+            className="ml-3 text-[#707070] hover:text-white transition-colors"
           >
-            ✕
+            <X size={14} />
           </button>
         </div>
       )}
