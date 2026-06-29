@@ -99,7 +99,7 @@ export default function LandingPage() {
   const [showChat, setShowChat] = useState(false);
 
   return (
-    <main className="min-h-screen bg-[#1B1C1E] overflow-x-hidden">
+    <main className="min-h-screen min-h-dvh bg-[#1B1C1E] overflow-x-hidden">
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-[#1B1C1E]/80 backdrop-blur-sm border-b border-[#707070]/20">
         <div className="flex items-center gap-2">
           <Image
@@ -123,7 +123,7 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      <section className="relative flex min-h-screen flex-col items-center justify-center px-6 pt-20 text-center overflow-hidden">
+      <section className="relative flex min-h-screen min-h-dvh flex-col items-center justify-center px-6 pt-20 text-center overflow-hidden">
         <div className="absolute inset-0 pointer-events-none select-none">
           {FLOATING_ELEMENTS.map((el, i) => (
             <motion.div

@@ -41,7 +41,7 @@ export default function EmpresarialPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#111111] text-white font-sans">
+    <main className="min-h-screen min-h-dvh bg-[#111111] text-white font-sans">
       <div className="max-w-4xl mx-auto">
 
       {/* Nav */}
