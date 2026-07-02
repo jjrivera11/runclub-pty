@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/reengagement",
       "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron/refresh-ig-token",
+      "schedule": "0 8 * * 1"
     }
   ]
 }
