@@ -112,6 +112,9 @@ export default function LandingPage() {
           />
         </div>
         <div className="flex items-center gap-4">
+          <Link href="/rutas" className="text-sm text-[#B8B8B8] hover:text-white transition-colors">
+            Rutas
+          </Link>
           <button onClick={() => router.push("/nosotros")} className="text-sm text-[#B8B8B8] hover:text-white transition-colors">
             Nosotros
           </button>
