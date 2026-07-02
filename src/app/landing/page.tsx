@@ -4,6 +4,7 @@ import { motion, useInView } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Lock } from "lucide-react";
 import { CoachJJChat } from "@/components/CoachJJChat";
 
 const TYPEWRITER_TEXTS = [
@@ -81,11 +82,11 @@ const BENEFITS = [
 ];
 
 const LEADERBOARD_PREVIEW = [
-  { pos: 1, name: "Valeria Ríos", pts: 580, arrow: "↑" },
-  { pos: 2, name: "Rodrigo Fábrega", pts: 510, arrow: "↑" },
-  { pos: 3, name: "Sofía Martínez", pts: 480, arrow: "↓" },
-  { pos: 4, name: "Tú", pts: 420, arrow: "↑", isMe: true },
-  { pos: 5, name: "Andrés Solís", pts: 390, arrow: "↓" },
+  { pos: 1, name: "Corredor A", pts: 580, arrow: "↑" },
+  { pos: 2, name: "Corredor B", pts: 510, arrow: "↑" },
+  { pos: 3, name: "Corredor C", pts: 480, arrow: "↓" },
+  { pos: 4, isPlaceholder: true as const },
+  { pos: 5, name: "Corredor D", pts: 390, arrow: "↓" },
 ];
 
 const STEPS = [
@@ -295,29 +296,43 @@ export default function LandingPage() {
             <FadeInSection delay={0.1}>
               <div className="rounded-2xl border border-[#707070]/40 bg-[#1B1C1E] p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-xs uppercase tracking-widest text-[#707070]">Runner Pro · Ranking</span>
+                  <span className="text-xs uppercase tracking-widest text-[#707070]">Así te vas a ver compitiendo</span>
                 </div>
                 <div className="flex flex-col gap-1">
-                  {LEADERBOARD_PREVIEW.map((row) => (
-                    <div
-                      key={row.pos}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-lg ${row.isMe ? "bg-[#F16823]/10 border border-[#F16823]/20" : ""}`}
-                    >
-                      <span className={`text-sm font-bold min-w-[20px] ${row.isMe ? "text-[#F16823]" : "text-[#707070]"}`}>
-                        {row.pos}
-                      </span>
-                      <span className={`text-sm flex-1 ${row.isMe ? "text-white font-bold" : "text-[#B8B8B8]"}`}>
-                        {row.name}
-                      </span>
-                      <span className={`text-xs ${row.isMe ? "text-[#F16823]" : "text-[#707070]"}`}>
-                        {row.pts} pts
-                      </span>
-                      <span style={{ color: row.arrow === "↑" ? "#10B981" : "#ef4444", fontSize: "11px" }}>
-                        {row.arrow}
-                      </span>
-                    </div>
-                  ))}
+                  {LEADERBOARD_PREVIEW.map((row) =>
+                    "isPlaceholder" in row && row.isPlaceholder ? (
+                      <div
+                        key={row.pos}
+                        className="flex items-center gap-3 px-3 py-2 rounded-lg border border-dashed border-[#707070]/50"
+                      >
+                        <span className="text-sm font-bold min-w-[20px] text-[#707070]">{row.pos}</span>
+                        <Lock size={14} className="text-[#707070] shrink-0" aria-hidden="true" />
+                        <span className="text-sm flex-1 text-[#707070]">Tu posición — al registrarte</span>
+                      </div>
+                    ) : (
+                      <div
+                        key={row.pos}
+                        className="flex items-center gap-3 px-3 py-2 rounded-lg"
+                      >
+                        <span className="text-sm font-bold min-w-[20px] text-[#707070]">
+                          {row.pos}
+                        </span>
+                        <span className="text-sm flex-1 text-[#B8B8B8]">
+                          {row.name}
+                        </span>
+                        <span className="text-xs text-[#707070]">
+                          {row.pts} pts
+                        </span>
+                        <span style={{ color: row.arrow === "↑" ? "#10B981" : "#ef4444", fontSize: "11px" }}>
+                          {row.arrow}
+                        </span>
+                      </div>
+                    )
+                  )}
                 </div>
+                <p className="text-xs text-[#707070] mt-3 text-center">
+                  Ejemplo ilustrativo. Tu ranking real empieza cuando te registras.
+                </p>
               </div>
             </FadeInSection>
 

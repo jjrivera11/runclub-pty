@@ -1354,7 +1354,7 @@ function OnboardingPageInner() {
   }
 
   return (
-    <main className="flex min-h-full flex-1 flex-col bg-[#1B1C1E] px-4 py-8">
+    <main className="flex min-h-full min-h-dvh flex-1 flex-col bg-[#1B1C1E] px-4 py-8">
       <div className="mx-auto w-full max-w-lg flex-1">
         <div className="mb-8 text-center">
           <RunClubLogo size="md" />
@@ -1423,7 +1423,7 @@ function OnboardingPageInner() {
 export default function OnboardingPage() {
   return (
     <Suspense fallback={
-      <main className="flex min-h-full flex-1 flex-col bg-[#1B1C1E] px-4 py-8">
+      <main className="flex min-h-full min-h-dvh flex-1 flex-col bg-[#1B1C1E] px-4 py-8">
         <div className="mx-auto w-full max-w-lg flex-1">
           <div className="mb-8 text-center">
             <img src="/logo.svg" alt="RunClub Panama" style={{ height: 48, margin: "0 auto" }} />
